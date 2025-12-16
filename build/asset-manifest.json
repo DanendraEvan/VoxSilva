@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/static/css/main.16b1f1b2.css",
+    "main.js": "/static/js/main.58e48213.js",
+    "static/media/fotoProdukBenar.png": "/static/media/fotoProdukBenar.a584fb46c19149a698e9.png",
+    "static/media/logo.png": "/static/media/logo.477f1949dfd20e29a84b.png",
+    "index.html": "/index.html",
+    "main.16b1f1b2.css.map": "/static/css/main.16b1f1b2.css.map",
+    "main.58e48213.js.map": "/static/js/main.58e48213.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.16b1f1b2.css",
+    "static/js/main.58e48213.js"
+  ]
+}

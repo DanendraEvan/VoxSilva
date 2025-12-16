@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant - VoxSilva</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-green: #2c4d32;
+            --primary-green-dark: #1a3320;
+            --accent-green: #4caf50;
+            --accent-light: #81c784;
+            --bg-primary: #f8faf9;
+            --bg-card: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --border-radius-sm: 8px;
+            --border-radius-md: 12px;
+            --border-radius-lg: 16px;
+            --border-radius-xl: 24px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8faf9 0%, #e8f5e9 100%);
+            color: var(--text-primary);
+        }
+
+        #app-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-green-dark) 100%);
+            color: white;
+            padding: var(--spacing-md) var(--spacing-lg);
+            box-shadow: var(--shadow-md);
+            flex-shrink: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--spacing-md);
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            flex: 1;
+        }
+
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: var(--border-radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo-icon i {
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .logo-text {
+            flex: 1;
+        }
+
+        .logo-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.125rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            flex-wrap: wrap;
+        }
+
+        .page-indicator {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .logo-subtitle {
+            font-size: 0.75rem;
+            opacity: 0.9;
+            margin-top: 2px;
+        }
+
+        .history-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            padding: 8px 14px;
+            border-radius: var(--border-radius-sm);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+        }
+
+        .history-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        /* Chat Container */
+        .chat-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: var(--spacing-lg);
+            padding-bottom: 200px;
+            scroll-behavior: smooth;
+        }
+
+        #chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #chat-messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        #chat-messages::-webkit-scrollbar-thumb {
+            background: var(--accent-green);
+            border-radius: 3px;
+        }
+
+        /* Chat Messages */
+        .chat-message {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chat-message.user {
+            flex-direction: row-reverse;
+        }
+
+        .avatar {
+            width: 42px;
+            height: 42px;
+            min-width: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            box-shadow: var(--shadow-sm);
+            border: 2px solid white;
+        }
+
+        .chat-message:not(.user) .avatar {
+            background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+            color: white;
+        }
+
+        .chat-message.user .avatar {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--accent-green) 100%);
+            color: white;
+        }
+
+        .message-bubble {
+            flex: 1;
+            max-width: 75%;
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+
+        .message-bubble:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .chat-message:not(.user) .message-bubble {
+            background: white;
+            border-bottom-left-radius: 6px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .chat-message.user .message-bubble {
+            background: linear-gradient(135deg, var(--primary-green) 0%, #26704d 100%);
+            color: white;
+            border-bottom-right-radius: 6px;
+        }
+
+        .message-content {
+            font-size: 0.9375rem;
+            line-height: 1.7;
+            word-wrap: break-word;
+        }
+
+        .message-content strong {
+            font-weight: 600;
+        }
+
+        .timestamp {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-top: var(--spacing-sm);
+            display: block;
+        }
+
+        /* Chat Input */
+        .chat-input-container {
+            position: fixed;
+            bottom: 70px;
+            left: 0;
+            right: 0;
+            padding: var(--spacing-md);
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(76, 175, 80, 0.1);
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+            z-index: 100;
+        }
+
+        .chat-input-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .chat-input-main {
+            display: flex;
+            align-items: flex-end;
+            background: white;
+            border: 2px solid rgba(76, 175, 80, 0.2);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-sm);
+            transition: all 0.3s ease;
+        }
+
+        .chat-input-main:focus-within {
+            border-color: var(--accent-green);
+            box-shadow: 0 4px 16px rgba(76, 175, 80, 0.2);
+        }
+
+        #chat-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: var(--spacing-sm) var(--spacing-md);
+            font-size: 0.9375rem;
+            resize: none;
+            outline: none;
+            font-family: inherit;
+            line-height: 1.5;
+            max-height: 120px;
+        }
+
+        #chat-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .input-actions {
+            display: flex;
+            gap: var(--spacing-xs);
+            padding: var(--spacing-xs);
+        }
+
+        .input-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: transparent;
+            color: #6b7280;
+            border-radius: var(--border-radius-sm);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .input-btn:hover {
+            background: rgba(76, 175, 80, 0.1);
+            color: var(--accent-green);
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, var(--accent-green) 0%, #45a049 100%);
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .send-btn:hover {
+            background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            overflow-x: auto;
+            padding: var(--spacing-xs) 0;
+            scrollbar-width: none;
+        }
+
+        .quick-actions::-webkit-scrollbar {
+            display: none;
+        }
+
+        .quick-action-btn {
+            padding: 10px 18px;
+            background: white;
+            border: 1.5px solid rgba(76, 175, 80, 0.3);
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--primary-green);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .quick-action-btn:hover {
+            background: rgba(76, 175, 80, 0.1);
+            border-color: var(--accent-green);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 12px 0;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            text-decoration: none;
+            color: #9ca3af;
+            transition: all 0.3s ease;
+            padding: 6px 12px;
+            border-radius: var(--border-radius-sm);
+            flex: 1;
+            max-width: 80px;
+        }
+
+        .nav-item i {
+            font-size: 1.25rem;
+        }
+
+        .nav-item span {
+            font-size: 0.65rem;
+            font-weight: 500;
+        }
+
+        .nav-item.active {
+            color: var(--accent-green);
+        }
+
+        .nav-item:hover {
+            color: var(--accent-green);
+        }
+
+        /* Activity Summary */
+        .activity-summary {
+            background: linear-gradient(135deg, #e8f5e9 0%, #f1f8f4 100%);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+            border: 1px solid rgba(76, 175, 80, 0.2);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .activity-summary h3 {
+            color: var(--primary-green);
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .activity-summary p {
+            font-size: 0.875rem;
+            color: #1b5e20;
+            line-height: 1.6;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        /* Loading Animation */
+        .typing-indicator {
+            display: flex;
+            gap: 6px;
+            padding: var(--spacing-sm) 0;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: 0s; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            30% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header {
+                padding: 10px var(--spacing-md);
+            }
+
+            .logo-title {
+                font-size: 1rem;
+            }
+
+            .logo-subtitle {
+                font-size: 0.7rem;
+            }
+
+            .page-indicator {
+                font-size: 0.65rem;
+                padding: 3px 8px;
+            }
+
+            #chat-messages {
+                padding: var(--spacing-md);
+                padding-bottom: 180px;
+            }
+
+            .chat-message {
+                gap: 10px;
+            }
+
+            .avatar {
+                width: 36px;
+                height: 36px;
+                min-width: 36px;
+                font-size: 1.1rem;
+            }
+
+            .message-bubble {
+                max-width: 85%;
+                padding: 12px 14px;
+            }
+
+            .message-content {
+                font-size: 0.875rem;
+            }
+
+            .chat-input-container {
+                bottom: 60px;
+                padding: 10px;
+            }
+
+            .quick-action-btn {
+                padding: 8px 14px;
+                font-size: 0.8125rem;
+            }
+
+            .history-btn span {
+                display: none;
+            }
+
+            .history-btn {
+                padding: 8px 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo-title {
+                font-size: 0.875rem;
+            }
+
+            .logo-subtitle {
+                display: none;
+            }
+
+            #chat-messages {
+                padding: 10px;
+                padding-bottom: 200px;
+            }
+
+            .avatar {
+                width: 32px;
+                height: 32px;
+                min-width: 32px;
+                font-size: 1rem;
+            }
+
+            .message-bubble {
+                padding: 10px 12px;
+            }
+
+            .message-content {
+                font-size: 0.8125rem;
+            }
+
+            .input-btn {
+                width: 32px;
+                height: 32px;
+            }
+
+            .quick-action-btn {
+                padding: 6px 12px;
+                font-size: 0.75rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+
+        /* AI Sparkle Animation */
+        .ai-sparkle {
+            animation: sparkle 2s infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% {
+                opacity: 0;
+                transform: scale(0);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="logo-text">
+                        <div class="logo-title">
+                            AI VoxSilva
+                            <span class="page-indicator">
+                                <i class="fas fa-sparkles"></i>
+                                Assistant
+                            </span>
+                        </div>
+                        <div class="logo-subtitle">Konsultan Greenhouse & Tanaman</div>
+                    </div>
+                </div>
+                <button class="history-btn" onclick="showNotification('History feature')">
+                    <i class="fas fa-history"></i>
+                    <span>Riwayat</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Chat Section -->
+        <div class="chat-section">
+            <div id="chat-messages">
+                <!-- Welcome Message -->
+                <div class="chat-message fade-in">
+                    <div class="avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-bubble">
+                        <div class="message-content">
+                            <strong>🌱 Selamat datang di AI VoxSilva</strong><br><br>
+                            Saya adalah asisten AI yang siap membantu Anda Memastikan Hutan Aman dari Penebangan Liar<br><br>
+                            <strong>✨ Saya dapat membantu:</strong><br>
+                            • Analisis data<br>
+                            • Rekomendasi langkah yang harus dilakukan<br>
+                            • Deteksi masalah dan dampaknya bagi lingkungan<br><br>
+                            <strong>💡 Cara menggunakan:</strong><br>
+                            1. Gunakan tombol cepat di bawah atau ketik pertanyaan<br>
+                            2. Dapatkan analisis dan rekomendasi real-time
+                        </div>
+                        <span class="timestamp">Baru saja</span>
+                    </div>
+                </div>
+
+                <!-- Example User Message -->
+                <div class="chat-message user fade-in" style="animation-delay: 0.2s;">
+                    <div class="avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="message-bubble">
+                        <div class="message-content">
+                            Bagaimana kondisi VoxSilva di Base 6?
+                        </div>
+                        <span class="timestamp">1 menit lalu</span>
+                    </div>
+                </div>
+
+                <!-- Example AI Response -->
+                <div class="chat-message fade-in" style="animation-delay: 0.4s;">
+                    <div class="avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-bubble">
+                        <div class="message-content">
+                            <strong>📊 Analisis Kondisi VoxSilva:</strong><br><br>
+                            Berdasarkan data terbaru:<br><br>
+                            <strong>📷 Kamera:</strong> Tidak terdeteksi aktivitas mencurigakan — lingkungan aman<br>
+                            <strong>🎤 Suara Lingkungan:</strong> Tingkat suara normal — tidak ada indikasi chainsaw atau aktivitas manusia<br>
+                            <strong>🧭 Sensor Gerak (MPU):</strong> Stabil — tidak ada getaran atau perpindahan alat<br>
+                            <strong>📡 LoRa:</strong> Koneksi stabil — data berhasil dikirim ke pusat pemantauan<br><br>
+                            
+                            <strong>🟢 Status VoxSilva:</strong> Kondisi lingkungan terkendali. Tidak ditemukan ancaman pada area pemantauan.
+                        </div>
+                        <span class="timestamp">Baru saja</span>
+                    </div>
+                </div>
+
+                <!-- Activity Summary Example -->
+                <div class="activity-summary fade-in" style="animation-delay: 0.6s;">
+                    <h3>
+                        <i class="fas fa-chart-line"></i>
+                        Ringkasan Aktivitas Hari Ini
+                    </h3>
+                    <p><strong>Deteksi Kamera:</strong> 12 objek terpantau (human/non-human)</p>
+                    <p><strong>Analisis Suara:</strong> 3 aktivitas terdeteksi (0 chainsaw, 3 suara hewan)</p>
+                    <p><strong>Status Pergerakan MPU:</strong> Stabil – tidak ada getaran abnormal</p>
+                    <p><strong>Data Terkirim LoRa:</strong> 8 paket berhasil dikirim hari ini</p>
+                </div>
+                
+            </div>
+
+            <!-- Chat Input -->
+            <div class="chat-input-container">
+                <div class="chat-input-wrapper">
+                    <!-- Main Input -->
+                    <div class="chat-input-main">
+                        <textarea 
+                            id="chat-input" 
+                            rows="1" 
+                            placeholder="Tanyakan tentang VoxSilva Anda..."
+                            onkeydown="handleEnter(event)"
+                            oninput="autoResize(this)"
+                        ></textarea>
+                        <div class="input-actions">
+                            <button class="input-btn" title="Lampirkan File">
+                                <i class="fas fa-paperclip"></i>
+                            </button>
+                            <button class="input-btn" title="Voice Input">
+                                <i class="fas fa-microphone"></i>
+                            </button>
+                            <button class="input-btn send-btn" onclick="sendMessage()" title="Kirim">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="quick-actions">
+                        <button class="quick-action-btn" onclick="quickAction('analisis')">
+                            📊 Analisis Lengkap
+                        </button>
+                        <button class="quick-action-btn" onclick="quickAction('kondisi')">
+                            🌡️ Cek Kondisi
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div w3-include-html="components/bottom-nav.html"></div> 
+
+    <script>
+        // Inisialisasi variabel untuk Gemini AI
+        let geminiInitialized = false;
+        let geminiError = null;
+
+        // Fungsi untuk inisialisasi Gemini
+        async function initializeGemini() {
+            if (geminiInitialized) return true;
+            
+            try {
+                // Gunakan dynamic import untuk modul ES6
+                const { GoogleGenerativeAI } = await import("https://esm.run/@google/generative-ai");
+                
+                // API Key - GANTI DENGAN API KEY ANDA YANG VALID
+                const API_KEY = "AIzaSyBI3hffTnY_cMAxgchm1Uay3TqpuljrTrM";
+                
+                if (!API_KEY || API_KEY.includes("YOUR_API_KEY") || API_KEY.length < 30) {
+                    throw new Error("API key tidak valid. Silakan ganti dengan API key Anda sendiri.");
+                }
+                
+                const genAI = new GoogleGenerativeAI(API_KEY);
+                const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+                
+                // Simpan fungsi di window
+                window.askGemini = async (prompt) => {
+                    try {
+                        const result = await model.generateContent(prompt);
+                        const response = await result.response;
+                        return response.text();
+                    } catch (error) {
+                        console.error("Error calling Gemini:", error);
+                        return "Maaf, terjadi kesalahan saat menghubungi AI. Pastikan API key valid dan koneksi internet stabil.";
+                    }
+                };
+                
+                geminiInitialized = true;
+                console.log("Gemini AI initialized successfully");
+                return true;
+            } catch (error) {
+                console.error("Failed to initialize Gemini AI:", error);
+                geminiError = error.message;
+                
+                // Fallback: jika Gemini gagal, gunakan respons lokal
+                window.askGemini = async (prompt) => {
+                    const responses = [
+                        "Berdasarkan analisis VoxSilva, kondisi hutan di base 1 saat ini stabil. Tidak terdeteksi aktivitas penebangan liar.",
+                        "Sistem kamera menunjukkan tidak ada aktivitas mencurigakan dalam 24 jam terakhir.",
+                        "Sensor suara mendeteksi pola normal hutan. Tidak ada suara chainsaw yang teridentifikasi.",
+                        "Data sensor MPU menunjukkan kondisi stabil tanpa getaran abnormal.",
+                        "Koneksi LoRa berfungsi normal dengan packet loss di bawah 2%."
+                    ];
+                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                    return `${randomResponse}\n\n(Catatan: Menggunakan mode fallback karena koneksi AI sedang tidak tersedia.)`;
+                };
+                
+                return true;
+            }
+        }
+
+        // Auto-resize textarea
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+        }
+
+        // Handle Enter key
+        function handleEnter(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        // Send message
+        async function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Tambahkan pesan user
+            addMessage(message, 'user');
+            input.value = '';
+            input.style.height = 'auto';
+            
+            // Tampilkan typing indicator
+            showTypingIndicator();
+            
+            try {
+                // Inisialisasi Gemini jika belum
+                await initializeGemini();
+                
+                // Pastikan fungsi askGemini tersedia
+                if (typeof window.askGemini !== 'function') {
+                    throw new Error("AI service not initialized properly");
+                }
+                
+                // Dapatkan respons dari Gemini
+                const reply = await window.askGemini(message);
+                
+                // Hapus typing indicator dan tambahkan respons
+                removeTypingIndicator();
+                addMessage(reply || "Maaf, saya tidak dapat memberikan respons saat ini.", 'ai');
+                
+            } catch (error) {
+                console.error("Error in sendMessage:", error);
+                removeTypingIndicator();
+                addMessage("⚠️ Terjadi kesalahan sistem. Silakan coba lagi nanti atau periksa koneksi internet Anda.", 'ai');
+            }
+        }
+
+        // Add message to chat
+        function addMessage(text, sender) {
+            const chatMessages = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${sender} fade-in`;
+            
+            const avatarIcon = sender === 'user' ? 'fa-user' : 'fa-robot';
+            const timestamp = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+            
+            // Escape HTML untuk keamanan
+            const escapedText = text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            
+            messageDiv.innerHTML = `
+                <div class="avatar">
+                    <i class="fas ${avatarIcon}"></i>
+                </div>
+                <div class="message-bubble">
+                    <div class="message-content">${escapedText}</div>
+                    <span class="timestamp">${timestamp}</span>
+                </div>
+            `;
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Show typing indicator
+        function showTypingIndicator() {
+            const chatMessages = document.getElementById('chat-messages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'chat-message fade-in';
+            typingDiv.id = 'typing-indicator';
+            
+            typingDiv.innerHTML = `
+                <div class="avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="message-bubble">
+                    <div class="typing-indicator">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                </div>
+            `;
+            
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Remove typing indicator
+        function removeTypingIndicator() {
+            const typingIndicator = document.getElementById('typing-indicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+
+        // Quick actions
+        function quickAction(type) {
+            const messages = {
+                'analisis': 'Berikan analisis lengkap kondisi VoxSilva di base 1',
+                'kondisi': 'Bagaimana kondisi VoxSilva base 1 saat ini?'
+            };
+            
+            const input = document.getElementById('chat-input');
+            input.value = messages[type] || '';
+            input.focus();
+            autoResize(input);
+        }
+
+        // Show notification
+        function showNotification(message) {
+            alert(message);
+        }
+
+        // Smooth scroll to bottom on load
+        window.addEventListener('load', () => {
+            const chatMessages = document.getElementById('chat-messages');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Initialize W3.js include functionality
+            w3.includeHTML();
+            
+            // Coba inisialisasi Gemini di background saat halaman load
+            initializeGemini().catch(err => {
+                console.log("Gemini initialization deferred:", err.message);
+            });
+            
+            const sendButton = document.querySelector('.send-btn');
+            if (sendButton) {
+                sendButton.addEventListener('click', sendMessage);
+            }
+            
+            // Event listener untuk tombol voice (placeholder)
+            const voiceButton = document.querySelector('.input-btn .fa-microphone');
+            if (voiceButton && voiceButton.parentElement) {
+                voiceButton.parentElement.addEventListener('click', function() {
+                    showNotification("Fitur voice input akan segera hadir!");
+                });
+            }
+        });
+    </script>
+    
+    <!-- W3.CSS Library for including HTML components -->
+    <script src="https://www.w3schools.com/lib/w3.js"></script>
+</body>
+</html>

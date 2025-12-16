@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil - VoxSilva</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-green: #2c4d32;
+            --primary-green-dark: #1a3320;
+            --accent-green: #4caf50;
+            --accent-light: #81c784;
+            --bg-primary: #f8faf9;
+            --bg-card: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --border-radius-sm: 8px;
+            --border-radius-md: 12px;
+            --border-radius-lg: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f8faf9 0%, #e8f5e9 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: var(--spacing-md);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
+            padding: var(--spacing-md);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-green-dark) 100%);
+            color: white;
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--border-radius-md);
+            margin-bottom: var(--spacing-lg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: var(--border-radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo-icon i {
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .logo-text {
+            flex: 1;
+        }
+
+        .logo-text h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .logo-text p {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        .profile-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin: 20px auto;
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #e0f2e9;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-info {
+            width: 100%;
+            text-align: center;
+        }
+
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c4d32;
+            margin: 12px 0 8px;
+        }
+
+        .profile-detail {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 8px 0;
+            color: #4a4a4a;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .profile-detail i {
+            color: #2c4d32;
+            width: 20px;
+            text-align: center;
+            opacity: 0.8;
+        }
+
+        .profile-base i {
+            color: var(--accent-green);
+        }
+
+        .btn-logout {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-green-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius-md);
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+            max-width: 200px;
+            margin: 0 auto;
+        }
+
+        .btn-logout:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(44, 77, 50, 0.2);
+        }
+
+        .btn-logout:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 480px) {
+            .profile-card {
+                padding: var(--spacing-md);
+            }
+            
+            .profile-avatar {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .profile-name {
+                font-size: 1.25rem;
+            }
+            
+            .profile-email {
+                font-size: 0.9rem;
+            }
+        }
+
+        .profile-tagline {
+            color: #6b7280;
+            font-size: 1.1rem;
+            margin-bottom: 24px;
+            font-style: italic;
+            padding-left: 4px;
+            border-left: 3px solid var(--secondary-color);
+        }
+
+        /* Contact Info */
+        .contact-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            box-shadow: var(--shadow-medium);
+            margin-bottom: 30px;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-top: 24px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: #f8fafc;
+            border-radius: var(--radius-sm);
+            transition: var(--transition-smooth);
+        }
+
+        .contact-item:hover {
+            background: #f1f5f9;
+            transform: translateX(5px);
+        }
+
+        .contact-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .contact-info h4 {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 4px;
+        }
+
+        .contact-info p {
+            color: #6b7280;
+            font-size: 0.95rem;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #9ca3af;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: var(--transition-smooth);
+            font-size: 0.75rem;
+            flex: 1;
+            max-width: 80px;
+        }
+
+        .nav-item i {
+            font-size: 1.25rem;
+            margin-bottom: 4px;
+            transition: var(--transition-smooth);
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+            background: rgba(30, 58, 138, 0.1);
+        }
+
+        .nav-item.active i {
+            transform: translateY(-2px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .hero-card {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .profile-name {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 16px;
+            }
+
+            .hero-card {
+                padding: 24px;
+            }
+
+            .profile-photo {
+                width: 160px;
+                height: 160px;
+            }
+
+            .profile-name {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <a href="dashboard.html" class="back-btn" style="color: white; text-decoration: none;">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h1>Profil Saya</h1>
+                    </div>
+                </div>
+                <div style="width: 44px;"></div> <!-- For balance -->
+            </div>
+        </header>
+
+    <div class="container">
+        <!-- Hero Profile Section -->
+        <div class="profile-hero">
+            <div class="hero-card">
+                <!-- Profile Photo Section -->
+                <!-- <div class="profile-photo-section">
+                    <div class="photo-frame">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80" 
+                             alt="Alexander Morgan" 
+                             class="profile-photo">
+                    </div>
+                </div> -->
+
+                <!-- Profile Card -->
+                <div class="profile-card">
+                    <img src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y" alt="Profile" class="profile-avatar" id="user-avatar">
+                    <div class="profile-info">
+                        <div class="profile-name" id="user-name">Memuat...</div>
+                        <div class="profile-detail" id="user-role">
+                            <i class="fas fa-briefcase"></i>
+                            <span id="role-text">Memuat...</span>
+                        </div>
+                        <div class="profile-detail" id="user-email">
+                            <i class="fas fa-envelope"></i>
+                            <span>memuat@email.com</span>
+                        </div>
+                        <div class="profile-detail" id="user-field">
+                            <i class="fas fa-tag"></i>
+                            <span>Base : <span id="base-number">0</span></span>
+                        </div>
+                    </div>
+                    <button id="logout-btn" class="btn-logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Keluar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Information
+        <div class="contact-card">
+            <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 24px; color: var(--dark-color);">
+                <i class="fas fa-address-card" style="color: var(--primary-color); margin-right: 10px;"></i>
+                Contact Information
+            </h3>
+            
+            <div class="contact-grid">
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="contact-info">
+                        <h4>Email</h4>
+                        <p>alex.morgan@patrolguard.com</p>
+                    </div>
+                </div>
+                
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div class="contact-info">
+                        <h4>Phone</h4>
+                        <p>+1 (555) 234-5678</p>
+                    </div>
+                </div>
+                
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="contact-info">
+                        <h4>Location</h4>
+                        <p>Jakarta, Indonesia</p>
+                    </div>
+                </div>
+                
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="contact-info">
+                        <h4>Working Hours</h4>
+                        <p>Mon-Fri, 7:00 AM - 6:00 PM</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="chat.html" class="nav-item">
+            <i class="fas fa-robot"></i>
+            <span>AI Assistant</span>
+        </a>
+        <a href="device.html" class="nav-item">
+            <i class="fas fa-microchip"></i>
+            <span>Device</span>
+        </a>
+        <a href="monitoring.html" class="nav-item">
+            <i class="fas fa-chart-line"></i>
+            <span>Monitoring</span>
+        </a>
+        <a href="profile.html" class="nav-item active">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    
+    <script>
+        // Simple MD5 function for Gravatar (fallback)
+        function md5(input) {
+            if (!input) return '00000000000000000000000000000000';
+            let hash = 0;
+            for (let i = 0; i < input.length; i++) {
+                const char = input.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            return Math.abs(hash).toString(16).padStart(32, '0');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Get DOM elements
+            const userName = document.getElementById('user-name');
+            const userEmail = document.getElementById('user-email');
+            const userAvatar = document.getElementById('user-avatar');
+            const logoutBtn = document.getElementById('logout-btn');
+            
+            // Wait for Firebase to be ready
+            function initializeProfile() {
+                if (!window.firebaseApp) {
+                    console.log('Waiting for Firebase...');
+                    setTimeout(initializeProfile, 100);
+                    return;
+                }
+
+                console.log('Firebase ready, initializing profile...');
+
+                // Check if user is logged in
+                window.firebaseApp.onAuthStateChanged(async (user) => {
+                    if (user) {
+                        console.log('User authenticated:', user.email);
+                        
+                        // Update profile information
+                        updateProfileInfo(user);
+                        
+                        // Fetch additional user data from Firestore
+                        await fetchUserData(user.uid);
+                    } else {
+                        // User is signed out, redirect to login
+                        console.log('User not authenticated, redirecting to login');
+                        window.location.href = 'login.html';
+                    }
+                });
+                
+                // Logout button click handler
+                logoutBtn.addEventListener('click', async () => {
+                    try {
+                        await window.firebaseApp.logout();
+                        window.location.href = 'login.html';
+                    } catch (error) {
+                        console.error("Logout error:", error);
+                        alert("Gagal keluar. Silakan coba lagi.");
+                    }
+                });
+            }
+            
+            // Function to update profile info
+            function updateProfileInfo(user) {
+                // Update name
+                const displayName = user.displayName || 
+                                   (user.email ? user.email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Pengguna');
+                userName.textContent = displayName;
+                
+                // Update email
+                const emailElement = document.querySelector('#user-email span');
+                if (emailElement) {
+                    emailElement.textContent = user.email || 'Email tidak tersedia';
+                }
+                
+                // Update avatar - gunakan photoURL dari Google atau Gravatar dari email
+                if (user.photoURL) {
+                    userAvatar.src = user.photoURL;
+                } else if (user.email) {
+                    const emailHash = md5(user.email.trim().toLowerCase());
+                    userAvatar.src = `https://www.gravatar.com/avatar/${emailHash}?d=mp&s=200`;
+                } else {
+                    userAvatar.src = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&s=200';
+                }
+            }
+            
+            // Function to fetch additional user data from Firestore
+            async function fetchUserData(userId) {
+                try {
+                    if (window.firebaseApp && window.firebaseApp.firebaseDB) {
+                        const userData = await window.firebaseApp.firebaseDB.getUserData(userId);
+                        
+                        if (userData) {
+                            console.log('User data from Firestore:', userData);
+                            
+                            // Update base number
+                            const baseElement = document.getElementById('base-number');
+                            if (baseElement) {
+                                baseElement.textContent = userData.base || userData.baseNumber || '0';
+                            }
+                            
+                            // Update role
+                            const roleElement = document.getElementById('role-text');
+                            if (roleElement) {
+                                roleElement.textContent = userData.role || userData.jobTitle || 'Penjaga Base';
+                            }
+                        } else {
+                            console.log('No additional user data found in Firestore');
+                            // Set default values
+                            const baseElement = document.getElementById('base-number');
+                            if (baseElement) {
+                                baseElement.textContent = '0';
+                            }
+                            const roleElement = document.getElementById('role-text');
+                            if (roleElement) {
+                                roleElement.textContent = 'Penjaga Base';
+                            }
+                        }
+                    } else {
+                        console.warn('Firebase DB not available');
+                        // Set default values
+                        const baseElement = document.getElementById('base-number');
+                        if (baseElement) {
+                            baseElement.textContent = '0';
+                        }
+                        const roleElement = document.getElementById('role-text');
+                        if (roleElement) {
+                            roleElement.textContent = 'Penjaga Base';
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error fetching user data from Firestore:', error);
+                    // Set default values on error
+                    const baseElement = document.getElementById('base-number');
+                    if (baseElement) {
+                        baseElement.textContent = '0';
+                    }
+                    const roleElement = document.getElementById('role-text');
+                    if (roleElement) {
+                        roleElement.textContent = 'Penjaga Base';
+                    }
+                }
+            }
+            
+            // Start initialization
+            initializeProfile();
+        });
+    </script>
+</body>
+</html>

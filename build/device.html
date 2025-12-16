@@ -1,0 +1,3543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Management Dashboard</title>
+    <meta name="theme-color" content="#31694E">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/logo192.png">
+    <!-- Firebase SDK Compat Version -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* RESET DAN BASE STYLES */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #f8fafc;
+            min-height: 100vh;
+            color: #1e293b;
+            overflow: hidden;
+        }
+
+        /* APP LAYOUT */
+        .app-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            display: flex;
+            height: calc(100vh - 70px);
+            overflow: hidden;
+        }
+
+        /* MAP SECTION */
+        .map-section {
+            flex: 1;
+            position: relative;
+            background: #f1f5f9;
+            min-width: 50%;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .map-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .map-control-btn {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            color: #475569;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .map-control-btn:hover {
+            background: #f8fafc;
+            color: #1e40af;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .map-overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .map-overlay h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #1e293b;
+        }
+
+        .map-overlay p {
+            font-size: 13px;
+            color: #64748b;
+            margin: 0;
+        }
+
+        /* CONTROLS SECTION */
+        .controls-section {
+            width: 40%;
+            min-width: 400px;
+            background: #ffffff;
+            border-left: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .controls-header {
+            padding: 20px 24px;
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .controls-header h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 4px;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 20px;
+            margin-top: 12px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .stat-value {
+            color: #1e40af;
+            font-weight: 600;
+            background: #e0e7ff;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        /* ADD STATION CARD */
+        .add-station-card {
+            background: #f8fafc;
+            margin: 20px 24px;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .add-station-card h3 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #1e293b;
+        }
+
+        .add-station-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .add-station-popup {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background-color: #1e40af;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .add-station-popup::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 6px;
+            border-style: solid;
+            border-color: #1e40af transparent transparent transparent;
+        }
+
+        .add-station-wrapper:hover .add-station-popup {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        #add-marker-btn {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            width: 100%;
+        }
+
+        #add-marker-btn:hover {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        #add-marker-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        #use-location-btn {
+            background: #f8fafc;
+            color: #3b82f6;
+            border: 1px solid #dbeafe;
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        #use-location-btn:hover {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+        }
+
+        /* STATION LIST */
+        .station-list-container {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .station-list-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8fafc;
+        }
+
+        .station-list-header h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .search-box {
+            position: relative;
+            width: 200px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 16px 10px 40px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            color: #1e293b;
+            font-size: 14px;
+        }
+
+        .station-list {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 16px 24px;
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+            overscroll-behavior: contain; /* Prevent scroll chaining */
+        }
+
+        /* STATION ITEM */
+        .station-item {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s ease;
+            position: relative;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+        }
+
+        .station-item:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.1);
+        }
+
+        .station-item.active {
+            border-color: #3b82f6;
+            background: #f0f9ff;
+            border-left: 3px solid #3b82f6;
+        }
+
+        .station-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .station-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .station-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+        }
+
+        .station-item.online .station-icon {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .station-item.offline .station-icon {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .station-details h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 2px;
+        }
+
+        .station-type {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .station-status {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        .station-item.online .station-status {
+            background: #ecfdf5;
+            color: #059669;
+            border: 1px solid #a7f3d0;
+        }
+
+        .station-item.offline .station-status {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .station-stats {
+            display: flex;
+            gap: 16px;
+            margin: 12px 0;
+            padding: 10px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #f1f5f9;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .stat i {
+            font-size: 14px;
+        }
+
+        /* DEVICES SECTION */
+        .devices-section {
+            margin-top: 12px;
+        }
+
+        .devices-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 16px 0 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .devices-header h5 {
+            font-size: 13px;
+            color: #475569;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .add-device-btn {
+            background: #f8fafc;
+            color: #3b82f6;
+            border: 1px solid #dbeafe;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .add-device-btn:hover {
+            background: #eff6ff;
+            color: #2563eb;
+            border-color: #bfdbfe;
+            transform: translateY(-1px);
+        }
+
+        .devices-list {
+            max-height: 150px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+            overscroll-behavior: contain; /* Prevent scroll chaining */
+        }
+
+        .device-item {
+            background: #ffffff;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-left: 3px solid #3b82f6;
+            position: relative;
+            border: 1px solid #f1f5f9;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .device-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .device-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .device-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1e293b;
+        }
+
+        .device-type-badge {
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: #f1f5f9;
+            color: #475569;
+            font-weight: 500;
+            border: 1px solid #e2e8f0;
+        }
+
+        .device-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            margin-top: 8px;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .status-online .status-dot { background: #10b981; }
+        .status-offline .status-dot { background: #ef4444; }
+        .status-warning .status-dot { background: #f59e0b; }
+
+        .device-location {
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* BOTTOM NAV */
+        .bottom-nav {
+            height: 70px;
+            background: #ffffff;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 20px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.03);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            flex: 1;
+            max-width: 80px;
+            text-decoration: none;
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .nav-item span {
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .nav-item.active {
+            color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .nav-item:hover:not(.active) {
+            color: #3b82f6;
+            background: #f8fafc;
+        }
+
+        /* MODAL STYLES */
+        .device-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .device-modal {
+            background: white;
+            width: 100%;
+            max-width: 500px;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: modalSlideUp 0.3s ease;
+        }
+
+        .device-modal-header {
+            padding: 20px 24px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .device-modal-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .close-modal {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .close-modal:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .device-modal-content {
+            padding: 24px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .label-info {
+            color: #64748b;
+            font-size: 12px;
+            font-weight: 400;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #1e293b;
+            background: #f8fafc;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .select-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .select-option {
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .select-option:hover {
+            border-color: #bfdbfe;
+            background: #f0f9ff;
+        }
+
+        .select-option.selected {
+            border-color: #3b82f6;
+            background: #eff6ff;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+        }
+
+        .option-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            font-size: 18px;
+            color: white;
+        }
+
+        .option-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .option-desc {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .location-section {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 16px;
+            margin: 20px 0;
+            border: 2px solid #e2e8f0;
+        }
+
+        .location-header h4 {
+            font-size: 14px;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .location-buttons {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .location-btn {
+            flex: 1;
+            padding: 10px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            color: #475569;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .location-btn:hover {
+            border-color: #bfdbfe;
+            background: #f0f9ff;
+            color: #3b82f6;
+        }
+
+        .location-btn.active {
+            border-color: #3b82f6;
+            background: #eff6ff;
+            color: #3b82f6;
+        }
+
+        .coordinates {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .device-modal-footer {
+            padding: 20px 24px;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .modal-btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .modal-btn.cancel {
+            background: white;
+            border: 2px solid #e2e8f0;
+            color: #475569;
+        }
+
+        .modal-btn.cancel:hover {
+            border-color: #cbd5e1;
+            background: #f1f5f9;
+        }
+
+        .modal-btn.save {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+        }
+
+        .modal-btn.save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .modal-btn.save:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Device Icon Colors */
+        .icon-camera { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
+        .icon-sensor { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .icon-gateway { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
+        .icon-tracker { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .icon-weather { background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); }
+
+        /* ANIMATIONS */
+        @keyframes modalSlideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* NOTIFICATION */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .notification.error {
+            background: #ef4444;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+                height: calc(100vh - 70px);
+            }
+            
+            .map-section {
+                height: 50vh;
+                min-height: 50vh;
+                flex-shrink: 0;
+            }
+            
+            .controls-section {
+                width: 100%;
+                height: 50vh;
+                min-height: 50vh;
+                flex-shrink: 0;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .station-list-container {
+                flex: 1;
+                min-height: 0; /* Important for flex scrolling */
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .station-list {
+                flex: 1;
+                min-height: 0; /* Important for flex scrolling */
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+                padding: 12px 16px;
+            }
+            
+            .station-list-header {
+                padding: 12px 16px;
+                flex-shrink: 0;
+            }
+            
+            .device-modal {
+                width: 95%;
+                max-height: 90vh;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .device-modal-content {
+                max-height: calc(90vh - 120px);
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .select-options {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .location-buttons {
+                flex-direction: column;
+            }
+            
+            /* Scrollbar lebih lebar di mobile untuk mudah di-scroll */
+            .station-list::-webkit-scrollbar,
+            .devices-list::-webkit-scrollbar {
+                width: 8px;
+                height: 8px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .station-list {
+                padding: 10px 12px;
+            }
+            
+            .station-list-header {
+                padding: 10px 12px;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .search-box {
+                width: 100%;
+                order: 2;
+            }
+            
+            .station-list-header h4 {
+                font-size: 14px;
+            }
+            
+            .devices-list {
+                max-height: 200px;
+            }
+        }
+
+        /* SCROLLBAR */
+        .station-list::-webkit-scrollbar,
+        .devices-list::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        .station-list::-webkit-scrollbar-track,
+        .devices-list::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 3px;
+        }
+
+        .station-list::-webkit-scrollbar-thumb,
+        .devices-list::-webkit-scrollbar-thumb {
+            background: #bfdbfe;
+            border-radius: 3px;
+        }
+
+        .station-list::-webkit-scrollbar-thumb:hover,
+        .devices-list::-webkit-scrollbar-thumb:hover {
+            background: #93c5fd;
+        }
+        
+        /* Scrollbar untuk Firefox */
+        .station-list,
+        .devices-list {
+            scrollbar-width: thin;
+            scrollbar-color: #bfdbfe #f1f5f9;
+        }
+
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #94a3b8;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px dashed #e2e8f0;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state h4 {
+            color: #475569;
+            margin-bottom: 8px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Map Section -->
+            <div class="map-section">
+                <div id="map"></div>
+                
+                <!-- Map Overlay -->
+                <div class="map-overlay">
+                    <h3>Device Locations</h3>
+                    <p>Monitor all stations and devices in real-time</p>
+                </div>
+                
+                <!-- Map Controls -->
+                <div class="map-controls">
+                    <button class="map-control-btn" id="locate-me" title="Locate Me">
+                        <i class="fas fa-location-arrow"></i>
+                    </button>
+                    <button class="map-control-btn" id="zoom-in" title="Zoom In">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <button class="map-control-btn" id="zoom-out" title="Zoom Out">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Controls Section -->
+            <div class="controls-section">
+                <!-- Header -->
+                <div class="controls-header">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <h2><i class="fas fa-microchip"></i> Station Controls</h2>
+                        <div style="background: #ef4444; width: 24px; height: 24px; border-radius: 50%; border: 2px solid white; display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">
+                            <i class="fas fa-microchip" style="color: white; font-size: 12px;"></i>
+                        </div>
+                    </div>
+                    <div class="header-stats">
+                        <div class="stat-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            Stations: <span class="stat-value" id="stationCount">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-wifi"></i>
+                            Online: <span class="stat-value" id="onlineCount">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-microchip"></i>
+                            Devices: <span class="stat-value" id="deviceCount">0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Add Station Card -->
+                <div class="add-station-card">
+                    <h3><i class="fas fa-plus-circle"></i> Add New Station</h3>
+                    <div class="input-group" style="display: block;">
+                        <div class="add-station-wrapper">
+                            <span class="add-station-popup">Click to add a new station</span>
+                            <button id="add-marker-btn">
+                                <i class="fas fa-plus"></i> ADD NEW STATION
+                            </button>
+                        </div>
+                    </div>
+                    <div class="input-group" style="margin-top: 10px;">
+                        <button id="use-location-btn" style="width: 100%; justify-content: center;">
+                            <i class="fas fa-location-arrow"></i> Use My Current Location
+                        </button>
+                    </div>
+                    <p style="font-size: 12px; opacity: 0.9; margin-top: 8px;">
+                        Click on map to place station location or use your current location
+                    </p>
+                    <div id="location-status" style="font-size: 12px; margin-top: 5px; color: #3b82f6; display: none;">
+                        <i class="fas fa-spinner fa-spin"></i> Detecting your location...
+                    </div>
+                </div>
+                
+                <!-- Station List -->
+                <div class="station-list-container">
+                    <div class="station-list-header">
+                        <h4>Station List</h4>
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="stationSearch" placeholder="Search stations...">
+                        </div>
+                    </div>
+                    
+                    <div class="station-list" id="mapStationList">
+                        <!-- Stations will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <a href="dashboard.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="chat.html" class="nav-item">
+                <i class="fas fa-robot"></i>
+                <span>AI Assistant</span>
+            </a>
+            <a href="device.html" class="nav-item active">
+                <i class="fas fa-microchip"></i>
+                <span>Devices</span>
+            </a>
+            <a href="monitoring.html" class="nav-item">
+                <i class="fas fa-chart-line"></i>
+                <span>Monitoring</span>
+            </a>
+            <a href="profile.html" class="nav-item">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- MODAL 1: ADD NEW STATION -->
+    <div id="stationModal" class="device-modal-overlay">
+        <div class="device-modal">
+            <div class="device-modal-header">
+                <h3><i class="fas fa-broadcast-tower"></i> Add New Station</h3>
+                <button class="close-modal" id="closeStationModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="device-modal-content">
+                <form id="stationForm">
+                    <div class="form-group">
+                        <label for="stationName">Station Name <span class="label-info">(Required)</span></label>
+                        <input type="text" id="stationName" class="form-input" placeholder="Enter station name" required>
+                    </div>
+                    
+                    <input type="hidden" id="stationTypeIcon" value="hubspot">
+                    
+                    <div class="form-group">
+                        <label for="stationDescription">Description <span class="label-info">(Optional)</span></label>
+                        <textarea id="stationDescription" class="form-input" rows="3" placeholder="Describe this station's purpose..."></textarea>
+                    </div>
+                    
+                    <div class="location-section">
+                        <div class="location-header">
+                            <h4><i class="fas fa-map-marker-alt"></i> Station Location</h4>
+                        </div>
+                        
+                        <div class="location-buttons">
+                            <button type="button" class="location-btn active" id="stationUseCurrentLocation">
+                                <i class="fas fa-location-arrow"></i> Current Location
+                            </button>
+                            <button type="button" class="location-btn" id="stationSelectOnMap">
+                                <i class="fas fa-map"></i> Select on Map
+                            </button>
+                        </div>
+                        
+                        <div class="coordinates">
+                            <div>
+                                <label for="stationLatitude">Latitude</label>
+                                <input type="number" id="stationLatitude" class="form-input" step="0.000001" placeholder="e.g., -6.200000" required>
+                            </div>
+                            <div>
+                                <label for="stationLongitude">Longitude</label>
+                                <input type="number" id="stationLongitude" class="form-input" step="0.000001" placeholder="e.g., 106.816666" required>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="device-modal-footer">
+                <button type="button" class="modal-btn cancel" id="cancelStationBtn">Cancel</button>
+                <button type="button" class="modal-btn save" id="saveStationBtn" disabled>Add Station</button>
+            </div>
+        </div>
+    </div>
+
+
+<!-- MODAL 2: ADD NEW DEVICE -->
+<div id="deviceModal" class="device-modal-overlay">
+    <div class="device-modal">
+        <div class="device-modal-header">
+            <h3><i class="fas fa-microchip"></i> Add New Device</h3>
+            <button class="close-modal" id="closeModal">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="device-modal-content">
+            <form id="deviceForm">
+                <div class="form-group">
+                    <label for="deviceName">Device Name <span class="label-info">(Required)</span></label>
+                    <input type="text" id="deviceName" class="form-input" placeholder="Enter device name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="deviceDescription">Description <span class="label-info">(Optional)</span></label>
+                    <textarea id="deviceDescription" class="form-input" rows="3" placeholder="Describe this device's purpose or location..."></textarea>
+                </div>
+                
+                <div class="location-section">
+                    <div class="location-header">
+                        <h4><i class="fas fa-map-marker-alt"></i> Device Location</h4>
+                        <p style="font-size: 12px; color: #64748b; margin-top: 4px;">
+                            Station: <span id="currentStationName" style="font-weight: 600; color: #3b82f6;">Not selected</span>
+                        </p>
+                    </div>
+                    
+                    <div class="location-buttons">
+                        <button type="button" class="location-btn active" id="useStationLocation">
+                            <i class="fas fa-broadcast-tower"></i> Use Station Location
+                        </button>
+                        <button type="button" class="location-btn" id="useCurrentLocation">
+                            <i class="fas fa-location-arrow"></i> Current Location
+                        </button>
+                        <button type="button" class="location-btn" id="selectOnMap">
+                            <i class="fas fa-map"></i> Select on Map
+                        </button>
+                    </div>
+                    
+                    <div class="coordinates">
+                        <div>
+                            <label for="latitude">Latitude</label>
+                            <input type="number" id="latitude" class="form-input" step="0.000001" placeholder="e.g., -6.200000" required>
+                        </div>
+                        <div>
+                            <label for="longitude">Longitude</label>
+                            <input type="number" id="longitude" class="form-input" step="0.000001" placeholder="e.g., 106.816666" required>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <div class="device-modal-footer">
+            <button type="button" class="modal-btn cancel" id="cancelBtn">Cancel</button>
+            <button type="button" class="modal-btn save" id="saveDeviceBtn" disabled>Add Device</button>
+        </div>
+    </div>
+</div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+    
+    <script>
+// State management
+const state = {
+    stations: {},
+    map: null,
+    selectedStation: null
+};
+
+// Device types for stations
+const deviceTypes = {
+    'camera': { icon: 'fa-video', type: 'Camera', color: '#3b82f6' },
+    'sensor': { icon: 'fa-microchip', type: 'Sensor', color: '#10b981' },
+    'gateway': { icon: 'fa-desktop', type: 'Gateway', color: '#8b5cf6' },
+    'tracker': { icon: 'fa-satellite', type: 'Tracker', color: '#f59e0b' },
+    'weather': { icon: 'fa-cloud-sun', type: 'Weather', color: '#06b6d4' }
+};
+
+// Station types
+const stationTypes = {
+    'hubspot': { type: 'Monitoring Hub', icon: 'fa-hubspot' },
+    'satellite-dish': { type: 'Sensor Array', icon: 'fa-satellite-dish' },
+    'satellite': { type: 'Tracking Hub', icon: 'fa-satellite' },
+    'server': { type: 'Control Center', icon: 'fa-server' }
+};
+
+// Device statuses
+const deviceStatuses = {
+    'online': { color: '#10b981', text: 'Online' },
+    'offline': { color: '#ef4444', text: 'Offline' },
+    'warning': { color: '#f59e0b', text: 'Warning' },
+    'maintenance': { color: '#8b5cf6', text: 'Maintenance' }
+};
+
+// Predefined color palette for stations and devices
+const colorPalette = [
+    '#3b82f6', // Blue
+    '#10b981', // Green
+    '#f59e0b', // Orange
+    '#8b5cf6', // Purple
+    '#ef4444', // Red
+    '#06b6d4', // Cyan
+    '#ec4899', // Pink
+    '#84cc16', // Lime
+    '#f97316', // Orange
+    '#6366f1', // Indigo
+    '#14b8a6', // Teal
+    '#a855f7', // Violet
+    '#eab308', // Yellow
+    '#22c55e', // Green
+    '#f43f5e', // Rose
+];
+
+// Function to generate unique color for station/device based on name
+function getUniqueColor(name, type = 'station') {
+    // Simple hash function to convert name to number
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+        const char = name.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    
+    // Add offset for devices to ensure different colors from stations
+    const offset = type === 'device' ? 1000 : 0;
+    const index = Math.abs(hash + offset) % colorPalette.length;
+    
+    return colorPalette[index];
+}
+
+// Device Modal State
+let currentStationForDevice = null;
+
+// Fallback sample data function (moved to global scope)
+function loadSampleData() {
+    console.log('📝 Loading sample data (fallback)...');
+    
+    const sampleStations = {
+        'Main Station Jakarta': {
+            position: [-6.200000, 106.816666],
+            status: 'online',
+            type: 'Monitoring Hub',
+            icon: 'fa-hubspot',
+            battery: 85,
+            signal: 'strong',
+            devices: [
+                { 
+                    name: 'ESP32-CAM 01',
+                    type: 'camera',
+                    status: 'online',
+                    lat: -6.200100,
+                    lng: 106.816766,
+                    description: 'Main surveillance camera'
+                }
+            ]
+        }
+    };
+    
+    // Add sample stations
+    Object.entries(sampleStations).forEach(([name, data]) => {
+        addStation(name, L.latLng(data.position[0], data.position[1]), data);
+    });
+    
+    updateCounts();
+}
+
+// Initialize when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    initMap();
+    initControls();
+    initModals();
+    
+    // Wait for Firebase then load from Firestore
+    waitForFirebase(function() {
+        console.log('🔥 Firebase ready, loading stations...');
+        loadStationsFromFirestore();
+    });
+});
+
+// Fungsi waitForFirebase yang sudah ada
+function waitForFirebase(callback) {
+    if (window.firebaseApp && window.firebaseApp.firebaseDB) {
+        callback();
+        return;
+    }
+    
+    let attempts = 0;
+    const maxAttempts = 50;
+    
+    const checkInterval = setInterval(() => {
+        attempts++;
+        if (window.firebaseApp && window.firebaseApp.firebaseDB) {
+            clearInterval(checkInterval);
+            console.log('✅ Firebase found after', attempts, 'attempts');
+            callback();
+        } else if (attempts >= maxAttempts) {
+            clearInterval(checkInterval);
+            console.error('❌ Firebase not found after max attempts');
+            // Load sample data as fallback
+            loadSampleData();
+            callback();
+        }
+    }, 100);
+}
+
+// Initialize map
+function initMap() {
+    state.map = L.map('map', {
+        attributionControl: false,
+        zoomControl: false
+    }).setView([-6.200000, 106.816666], 13);
+    
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 19
+    }).addTo(state.map);
+    
+    // Add zoom control
+    L.control.zoom({
+        position: 'topright'
+    }).addTo(state.map);
+    
+    // Map click handler for quick station placement (if needed)
+    state.map.on('click', function(e) {
+        // Optional: Quick station placement on map click
+        // Uncomment if you want map clicks to also create stations
+        // openStationModalWithLocation(e.latlng.lat, e.latlng.lng);
+    });
+}
+
+// Initialize controls
+function initControls() {
+    const addMarkerBtn = document.getElementById('add-marker-btn');
+    const useLocationBtn = document.getElementById('use-location-btn');
+    const locationStatus = document.getElementById('location-status');
+    const stationSearch = document.getElementById('stationSearch');
+
+    // Handle use current location button
+    useLocationBtn.addEventListener('click', () => {
+        if (navigator.geolocation) {
+            locationStatus.style.display = 'block';
+            locationStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Detecting your location...';
+            
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const userLatLng = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    
+                    // Center map on user's location
+                    state.map.flyTo(userLatLng, 15);
+                    
+                    locationStatus.innerHTML = '<i class="fas fa-map-marker-alt"></i> Location detected!';
+                    setTimeout(() => {
+                        locationStatus.style.display = 'none';
+                    }, 3000);
+                },
+                (error) => {
+                    console.error('Error getting location:', error);
+                    locationStatus.innerHTML = '<i class="fas fa-exclamation-circle" style="color: #ef4444;"></i> Failed to detect location';
+                    setTimeout(() => {
+                        locationStatus.style.display = 'none';
+                    }, 5000);
+                }
+            );
+        } else {
+            locationStatus.innerHTML = '<i class="fas fa-exclamation-circle" style="color: #ef4444;"></i> Geolocation not supported';
+            locationStatus.style.display = 'block';
+            setTimeout(() => {
+                locationStatus.style.display = 'none';
+            }, 5000);
+        }
+    });
+    
+    // Add station button - opens station modal
+    addMarkerBtn.addEventListener('click', function() {
+        openStationModal();
+    });
+    
+    // Search functionality
+    stationSearch.addEventListener('input', function(e) {
+        filterStations(e.target.value.toLowerCase());
+    });
+    
+    // Map control buttons
+    document.getElementById('locate-me').addEventListener('click', function() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                state.map.flyTo([position.coords.latitude, position.coords.longitude], 15);
+            });
+        }
+    });
+    
+    document.getElementById('zoom-in').addEventListener('click', function() {
+        state.map.zoomIn();
+    });
+    
+    document.getElementById('zoom-out').addEventListener('click', function() {
+        state.map.zoomOut();
+    });
+}
+
+// Initialize both modals
+function initModals() {
+    initStationModal();
+    initDeviceModalFunctions();
+}
+
+// Initialize station modal
+function initStationModal() {
+    const stationModal = document.getElementById('stationModal');
+    const closeBtn = document.getElementById('closeStationModal');
+    const cancelBtn = document.getElementById('cancelStationBtn');
+    const saveBtn = document.getElementById('saveStationBtn');
+    const useCurrentBtn = document.getElementById('stationUseCurrentLocation');
+    const selectMapBtn = document.getElementById('stationSelectOnMap');
+    const stationNameInput = document.getElementById('stationName');
+    const latitudeInput = document.getElementById('stationLatitude');
+    const longitudeInput = document.getElementById('stationLongitude');
+    
+    // Add input event listeners for form validation
+    [stationNameInput, latitudeInput, longitudeInput].forEach(input => {
+        input.addEventListener('input', validateStationForm);
+    });
+    
+    // Add click event listener for save button
+    saveBtn.addEventListener('click', async () => {
+        if (!validateStationForm()) {
+            showNotification('Please fill in all required fields', 'error');
+            return;
+        }
+        
+        const stationData = {
+            name: stationNameInput.value.trim(),
+            position: [
+                parseFloat(latitudeInput.value),
+                parseFloat(longitudeInput.value)
+            ],
+            description: document.getElementById('stationDescription').value.trim() || '',
+            type: 'hubspot',
+            createdAt: new Date().toISOString()
+        };
+        
+        try {
+            if (window.firebaseApp && window.firebaseApp.firebaseDB) {
+                await window.firebaseApp.firebaseDB.addStation(stationData);
+            showNotification('Station added successfully!', 'success');
+            stationModal.style.display = 'none';
+            document.getElementById('stationForm').reset();
+            } else {
+                throw new Error('Firebase not available');
+            }
+        } catch (error) {
+            console.error('Error adding station:', error);
+            showNotification('Failed to add station. Please try again.', 'error');
+        }
+    });
+
+    // Close modal
+    [closeBtn, cancelBtn].forEach(btn => {
+        btn.addEventListener('click', () => {
+            stationModal.style.display = 'none';
+        });
+    });
+
+    // Close modal on overlay click
+    stationModal.addEventListener('click', (e) => {
+        if (e.target === stationModal) {
+            stationModal.style.display = 'none';
+        }
+    });
+
+
+    // Location method selection for station
+    document.querySelectorAll('#stationModal .location-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('#stationModal .location-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            if (this.id === 'stationUseCurrentLocation') {
+                // Use current location
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            document.getElementById('stationLatitude').value = position.coords.latitude.toFixed(6);
+                            document.getElementById('stationLongitude').value = position.coords.longitude.toFixed(6);
+                            validateStationForm();
+                            state.map.flyTo([position.coords.latitude, position.coords.longitude], 15);
+                        },
+                        (error) => {
+                            console.error('Error getting location:', error);
+                            showNotification('Failed to get current location. Please enter coordinates manually.', 'error');
+                        }
+                    );
+                }
+            } else if (this.id === 'stationSelectOnMap') {
+                // Select on map
+                stationModal.style.display = 'none';
+                
+                const instruction = L.popup()
+                    .setLatLng(state.map.getCenter())
+                    .setContent(`
+                        <div style="text-align: center; padding: 10px;">
+                            <i class="fas fa-map-marker-alt" style="font-size: 24px; color: #3b82f6; margin-bottom: 10px;"></i>
+                            <h4 style="margin: 0 0 10px;">Select Station Location</h4>
+                            <p style="margin: 0;">Click anywhere on the map</p>
+                        </div>
+                    `)
+                    .openOn(state.map);
+                
+                const mapClickHandler = (e) => {
+                    document.getElementById('stationLatitude').value = e.latlng.lat.toFixed(6);
+                    document.getElementById('stationLongitude').value = e.latlng.lng.toFixed(6);
+                    
+                    state.map.closePopup();
+                    state.map.off('click', mapClickHandler);
+                    
+                    setTimeout(() => {
+                        stationModal.style.display = 'flex';
+                        validateStationForm();
+                    }, 300);
+                };
+                
+                state.map.on('click', mapClickHandler);
+            }
+        });
+    });
+
+    // Save station
+    saveBtn.addEventListener('click', async () => {
+        const stationName = document.getElementById('stationName').value.trim();
+        const stationTypeIcon = 'hubspot'; // Default station type
+        const description = document.getElementById('stationDescription').value.trim();
+        const latitude = parseFloat(document.getElementById('stationLatitude').value);
+        const longitude = parseFloat(document.getElementById('stationLongitude').value);
+        
+        // Validation
+        if (!stationName) {
+            showNotification('Please enter a station name', 'error');
+            document.getElementById('stationName').focus();
+            return;
+        }
+        
+        // Set default station type if not selected
+        if (!stationTypeIcon) {
+            document.getElementById('stationTypeIcon').value = 'hubspot';
+        }
+        
+        if (isNaN(latitude) || isNaN(longitude)) {
+            showNotification('Please enter valid coordinates', 'error');
+            return;
+        }
+        
+        // Check if station name already exists
+        if (state.stations[stationName]) {
+            showNotification('Station with this name already exists!', 'error');
+            return;
+        }
+        
+        // Map icon type to station type
+        const stationType = stationTypes[stationTypeIcon] || stationTypes.hubspot;
+        
+        try {
+            // Save to Firebase
+            const stationData = {
+                name: stationName,
+                description: description,
+                lat: latitude,
+                lng: longitude,
+                status: 'online',
+                type: stationType.type,
+                icon: stationType.icon,
+                battery: 100,
+                signal: 'strong',
+                devices: [],
+                createdAt: new Date().toISOString()
+            };
+            
+            // Add to Firebase
+            if (window.firebaseApp && window.firebaseApp.firebaseDB) {
+                const stationId = await window.firebaseApp.firebaseDB.addStation(stationData);
+            console.log('Station saved to Firebase:', stationId);
+            } else {
+                throw new Error('Firebase not available');
+            }
+            
+            // Add to local state
+            addStation(stationName, L.latLng(latitude, longitude), stationData);
+            
+            // Close modal
+            stationModal.style.display = 'none';
+            
+            // Reset form
+            document.getElementById('stationForm').reset();
+            document.getElementById('stationTypeIcon').value = '';
+            document.querySelectorAll('#stationModal .select-option').forEach(opt => opt.classList.remove('selected'));
+            document.querySelectorAll('#stationModal .location-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('stationUseCurrentLocation').classList.add('active');
+            document.getElementById('saveStationBtn').disabled = true;
+            
+            // Show success message
+            showNotification(`Station "${stationName}" added successfully!`);
+            
+        } catch (error) {
+            console.error('Error saving station:', error);
+            showNotification('Failed to save station. Please try again.', 'error');
+        }
+    });
+
+    // Form validation for station
+    const stationFormInputs = document.querySelectorAll('#stationForm input, #stationForm textarea');
+    stationFormInputs.forEach(input => {
+        input.addEventListener('input', () => {
+            validateStationForm();
+        });
+    });
+}
+
+// Initialize device modal functions
+function initDeviceModalFunctions() {
+    const modal = document.getElementById('deviceModal');
+    const closeBtn = document.getElementById('closeModal');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const saveBtn = document.getElementById('saveDeviceBtn');
+    const useStationBtn = document.getElementById('useStationLocation');
+    const useCurrentBtn = document.getElementById('useCurrentLocation');
+    const selectMapBtn = document.getElementById('selectOnMap');
+
+    // Close modal
+    [closeBtn, cancelBtn].forEach(btn => {
+        btn.addEventListener('click', () => {
+            modal.style.display = 'none';
+            currentStationForDevice = null;
+        });
+    });
+
+    // Close modal on overlay click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+            currentStationForDevice = null;
+        }
+    });
+
+    // Device type selection removed - using default 'sensor' type
+
+    // Location method selection
+    document.querySelectorAll('#deviceModal .location-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('#deviceModal .location-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            if (this.id === 'useCurrentLocation') {
+                // Use current location
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            document.getElementById('latitude').value = position.coords.latitude.toFixed(6);
+                            document.getElementById('longitude').value = position.coords.longitude.toFixed(6);
+                            validateDeviceForm();
+                            state.map.flyTo([position.coords.latitude, position.coords.longitude], 15);
+                        },
+                        (error) => {
+                            console.error('Error getting location:', error);
+                            showNotification('Failed to get current location. Please enter coordinates manually.', 'error');
+                        }
+                    );
+                }
+            } else if (this.id === 'selectOnMap') {
+                // Select on map
+                modal.style.display = 'none';
+                
+                const instruction = L.popup()
+                    .setLatLng(state.map.getCenter())
+                    .setContent(`
+                        <div style="text-align: center; padding: 10px;">
+                            <i class="fas fa-map-marker-alt" style="font-size: 24px; color: #3b82f6; margin-bottom: 10px;"></i>
+                            <h4 style="margin: 0 0 10px;">Select Device Location</h4>
+                            <p style="margin: 0;">Click anywhere on the map</p>
+                        </div>
+                    `)
+                    .openOn(state.map);
+                
+                const mapClickHandler = (e) => {
+                    document.getElementById('latitude').value = e.latlng.lat.toFixed(6);
+                    document.getElementById('longitude').value = e.latlng.lng.toFixed(6);
+                    
+                    state.map.closePopup();
+                    state.map.off('click', mapClickHandler);
+                    
+                    setTimeout(() => {
+                        modal.style.display = 'flex';
+                        validateDeviceForm();
+                    }, 300);
+                };
+                
+                state.map.on('click', mapClickHandler);
+            }
+        });
+    });
+
+    // Save device
+    saveBtn.addEventListener('click', () => {
+        const deviceName = document.getElementById('deviceName').value.trim();
+        const description = document.getElementById('deviceDescription').value.trim();
+        const latitude = parseFloat(document.getElementById('latitude').value);
+        const longitude = parseFloat(document.getElementById('longitude').value);
+        
+        // Default device type (sensor)
+        const deviceType = 'sensor';
+        
+        // Validation
+        if (!deviceName) {
+            showNotification('Please enter a device name', 'error');
+            document.getElementById('deviceName').focus();
+            return;
+        }
+        
+        if (isNaN(latitude) || isNaN(longitude)) {
+            showNotification('Please enter valid coordinates', 'error');
+            return;
+        }
+        
+        const station = state.stations[currentStationForDevice];
+        if (!station) return;
+        
+        // Create device
+        const device = {
+            name: deviceName,
+            type: deviceType,
+            status: 'online',
+            lat: latitude,
+            lng: longitude,
+            description: description || `Device added to ${currentStationForDevice}`
+        };
+        
+        // Add to station
+        station.devices.push(device);
+        device.stationName = currentStationForDevice;
+        device.deviceIndex = station.devices.length - 1;
+        
+        // Add marker to map
+        addDeviceMarker(device, currentStationForDevice);
+        
+        // Update UI
+        updateStationList();
+        updateCounts();
+        
+        // Close modal
+        modal.style.display = 'none';
+        currentStationForDevice = null;
+        
+        // Reset form
+        document.getElementById('deviceForm').reset();
+        document.querySelectorAll('#deviceModal .location-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById('useStationLocation').classList.add('active');
+        document.getElementById('saveDeviceBtn').disabled = true;
+        
+        // Show success message
+        showNotification(`Device "${deviceName}" added successfully!`);
+    });
+
+    // Form validation for device
+    const formInputs = document.querySelectorAll('#deviceForm input, #deviceForm textarea');
+    formInputs.forEach(input => {
+        input.addEventListener('input', () => {
+            validateDeviceForm();
+        });
+    });
+}
+
+// Validate station form
+function validateStationForm() {
+    const stationName = document.getElementById('stationName').value.trim();
+    const latitude = document.getElementById('stationLatitude').value;
+    const longitude = document.getElementById('stationLongitude').value;
+    const saveBtn = document.getElementById('saveStationBtn');
+    
+    const isValid = stationName && 
+                   !isNaN(parseFloat(latitude)) && 
+                   !isNaN(parseFloat(longitude));
+    
+    if (saveBtn) {
+        saveBtn.disabled = !isValid;
+    }
+    
+    return isValid;
+}
+
+// Validate device form
+function validateDeviceForm() {
+    const deviceName = document.getElementById('deviceName').value.trim();
+    const latitude = document.getElementById('latitude').value;
+    const longitude = document.getElementById('longitude').value;
+    const saveBtn = document.getElementById('saveDeviceBtn');
+    
+    const isValid = deviceName && 
+                   !isNaN(parseFloat(latitude)) && 
+                   !isNaN(parseFloat(longitude));
+    
+    saveBtn.disabled = !isValid;
+}
+
+// Load devices for a specific station from Firestore
+function loadDevicesForStation(stationId, stationObj, stationName) {
+    if (!window.firebaseApp || !window.firebaseApp.firebaseDB || !window.firebaseApp.firebaseDB.getDevices) {
+        console.warn(`⚠️ getDevices function not available for station ${stationId}`);
+        stationObj.devices = [];
+        return;
+    }
+    
+    window.firebaseApp.firebaseDB.getDevices(stationId)
+        .then(devices => {
+            console.log(`📱 Loading ${devices?.length || 0} devices for station "${stationName}" (ID: ${stationId}):`, devices);
+            
+            // Ensure devices array exists
+            if (!Array.isArray(devices)) {
+                console.warn(`⚠️ Devices is not an array for station ${stationId}, using empty array`);
+                devices = [];
+            }
+            
+            // Update station devices in state (IMPORTANT: preserve existing devices if any)
+            if (!stationObj.devices || !Array.isArray(stationObj.devices)) {
+                stationObj.devices = [];
+            }
+            
+            // Merge devices from Firestore with existing devices (avoid duplicates)
+            const existingDeviceIds = new Set(stationObj.devices.map(d => d.deviceId || d.id).filter(Boolean));
+            devices.forEach(device => {
+                const deviceId = device.deviceId || device.id;
+                if (deviceId && !existingDeviceIds.has(deviceId)) {
+                    stationObj.devices.push(device);
+                    existingDeviceIds.add(deviceId);
+                } else if (deviceId) {
+                    // Update existing device
+                    const existingIndex = stationObj.devices.findIndex(d => (d.deviceId || d.id) === deviceId);
+                    if (existingIndex >= 0) {
+                        stationObj.devices[existingIndex] = device;
+                    }
+                }
+            });
+            
+            // Remove old device markers and radius circles before adding new ones
+            stationObj.devices.forEach(device => {
+                if (device.marker && state.map.hasLayer(device.marker)) {
+                    state.map.removeLayer(device.marker);
+                }
+                if (device.radiusCircle && state.map.hasLayer(device.radiusCircle)) {
+                    state.map.removeLayer(device.radiusCircle);
+                }
+            });
+            
+            // Clear and rebuild devices array from Firestore (source of truth)
+            stationObj.devices = devices;
+            
+            // Add each device marker to map
+            devices.forEach((device, index) => {
+                if (device.lat && device.lng) {
+                    // Ensure deviceId is set (from Firestore document id or device.id)
+                    if (!device.deviceId && device.id) {
+                        device.deviceId = device.id;
+                    }
+                    if (!device.deviceId) {
+                        console.warn(`⚠️ Device at index ${index} has no deviceId:`, device);
+                    }
+                    
+                    // Ensure unique color is set (use saved color or generate new one)
+                    if (!device.color) {
+                        device.color = getUniqueColor(device.name, 'device');
+                    }
+                    
+                    // Add device marker to map
+                    console.log(`📍 Adding device marker: ${device.name} (ID: ${device.deviceId || device.id})`);
+                    addDeviceMarker(device, stationName);
+                } else {
+                    console.warn(`⚠️ Device "${device.name}" skipped: missing lat/lng`, device);
+                }
+            });
+            
+            // Update radius circle to include all loaded devices
+            updateStationRadius(stationName);
+            updateStationList();
+            updateCounts();
+            
+            console.log(`✅ Successfully loaded ${devices.length} devices for station "${stationName}"`);
+        })
+        .catch(error => {
+            console.error(`❌ Error loading devices for station ${stationId}:`, error);
+            // Set empty devices array on error
+            stationObj.devices = [];
+            updateStationList();
+        });
+}
+
+// Load stations from Firestore
+function loadStationsFromFirestore() {
+    if (window.firebaseApp && window.firebaseApp.firebaseDB && window.firebaseApp.firebaseDB.listenStations) {
+        console.log('📡 Loading stations from Firestore...');
+        
+        // Listen for real-time updates
+        const unsubscribe = window.firebaseApp.firebaseDB.listenStations((stations) => {
+            console.log('📦 Stations from Firestore:', stations);
+            
+            // Store references to old stations for cleanup
+            const oldStations = { ...state.stations };
+            
+            // Clear existing markers and radius circles from map
+            if (state.map) {
+                // Remove all markers and circles from old stations
+                Object.values(oldStations).forEach(station => {
+                    // Remove station marker
+                    if (station.marker && state.map.hasLayer(station.marker)) {
+                        state.map.removeLayer(station.marker);
+                    }
+                    // Remove station radius circle
+                    if (station.radiusCircle && state.map.hasLayer(station.radiusCircle)) {
+                        state.map.removeLayer(station.radiusCircle);
+                    }
+                    // Remove device markers and radius circles
+                    if (station.devices && Array.isArray(station.devices)) {
+                        station.devices.forEach(device => {
+                            if (device.marker && state.map.hasLayer(device.marker)) {
+                                state.map.removeLayer(device.marker);
+                            }
+                            if (device.radiusCircle && state.map.hasLayer(device.radiusCircle)) {
+                                state.map.removeLayer(device.radiusCircle);
+                            }
+                        });
+                    }
+                });
+            }
+            
+            // Reset state (devices akan di-load ulang dari Firestore)
+            state.stations = {};
+            
+            // Process stations from Firestore
+            const stationEntries = Object.entries(stations);
+            console.log(`📊 Processing ${stationEntries.length} stations from Firestore...`);
+            
+            stationEntries.forEach(([stationId, stationData]) => {
+                if (stationData && stationData.lat && stationData.lng) {
+                    const stationName = stationData.name || `Station_${stationId}`;
+                    console.log(`📍 Processing station: "${stationName}" (ID: ${stationId})`);
+                    
+                    // Prepare station data - PASTIKAN stationId disimpan
+                    const stationObj = {
+                        ...stationData,
+                        stationId: stationId, // INI PENTING!
+                        name: stationName, // Tambahkan nama
+                        position: [stationData.lat, stationData.lng],
+                        devices: [], // Akan diload terpisah
+                        marker: null,
+                        radiusCircle: null
+                    };
+                    
+                    // Pastikan warna unik diset
+                    if (!stationObj.color) {
+                        stationObj.color = getUniqueColor(stationName, 'station');
+                    }
+                    
+                    // Add to state
+                    state.stations[stationName] = stationObj;
+                    
+                    // Tambahkan marker ke peta
+                    addStationMarker(
+                        stationName, 
+                        L.latLng(stationData.lat, stationData.lng), 
+                        stationObj
+                    );
+                    
+                    // Load devices untuk station ini
+                    loadDevicesForStation(stationId, stationObj, stationName);
+                } else {
+                    console.warn(`⚠️ Skipping station ${stationId}: missing lat/lng`, stationData);
+                }
+            });
+            
+            // Update UI
+            updateStationList();
+            updateCounts();
+            
+            // If no stations, show empty state
+            if (Object.keys(stations).length === 0) {
+                const stationList = document.getElementById('mapStationList');
+                stationList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <h4>No Stations Yet</h4>
+                        <p>Add your first station to begin monitoring</p>
+                    </div>
+                `;
+            }
+            
+            console.log(`✅ Finished processing ${stationEntries.length} stations. All devices will be loaded from Firestore.`);
+            
+            // Update UI
+            updateStationList();
+            updateCounts();
+            
+            // If no stations, show empty state
+            if (Object.keys(stations).length === 0) {
+                const stationList = document.getElementById('mapStationList');
+                stationList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <h4>No Stations Yet</h4>
+                        <p>Add your first station to begin monitoring</p>
+                    </div>
+                `;
+            }
+        });
+        
+        // Store unsubscribe function
+        window.firestoreUnsubscribe = unsubscribe;
+    } else {
+        console.error('❌ FirebaseDB not available, using sample data');
+        // Fallback to sample data
+        loadSampleData();
+    }
+}
+
+
+// Panggil fungsi ini setelah Firebase siap
+waitForFirebase(function() {
+    console.log('Initializing Firestore integration...');
+    loadStationsFromFirestore();
+});
+
+// Add a new station
+// Add a new station (for local state only, Firestore sudah handle di modal)
+function addStation(name, latlng, data = null) {
+    // Skip if already exists
+    if (state.stations[name]) {
+        console.log(`Station ${name} already exists in local state`);
+        return;
+    }
+    
+    const signals = ['weak', 'medium', 'strong'];
+    
+    const newStation = data || {
+        position: [latlng.lat, latlng.lng],
+        status: 'online',
+        type: 'Monitoring Hub',
+        icon: 'fa-hubspot',
+        battery: Math.floor(Math.random() * 100),
+        signal: signals[Math.floor(Math.random() * signals.length)],
+        devices: data?.devices || []
+    };
+    
+    // Add to local state only (Firestore sudah handle data persist)
+    state.stations[name] = newStation;
+    
+    // Add marker to map
+    addStationMarker(name, latlng, newStation);
+    
+    // Update UI
+    updateStationList();
+    updateCounts();
+    
+    // Center map on new station
+    state.map.flyTo(latlng, 15);
+    
+    // Select the new station
+    selectStation(name);
+}
+
+// Helper function to calculate radius that includes both station and all devices
+function calculateStationRadius(stationPosition, devices) {
+    let maxDeviceDistance = 0;
+    
+    // Default radius when no devices
+    let radius = 200;
+    
+    if (devices && devices.length > 0) {
+        // Calculate distance from station to each device
+        devices.forEach(device => {
+            if (device.lat && device.lng) {
+                const distance = state.map.distance(
+                    stationPosition,
+                    [device.lat, device.lng]
+                );
+                maxDeviceDistance = Math.max(maxDeviceDistance, distance);
+            }
+        });
+        
+        // Radius must be at least equal to the furthest device distance
+        // Add 20% margin to ensure both station (at center) and all devices are well within the circle
+        // Minimum radius is 200m for visibility
+        radius = Math.max(200, maxDeviceDistance * 1.2);
+    }
+    
+    return { radius, maxDeviceDistance };
+}
+
+// Helper function to update radius circle for a station
+function updateStationRadius(stationName) {
+    const station = state.stations[stationName];
+    if (!station || !station.marker || !station.position) return;
+    
+    const stationPosition = Array.isArray(station.position) 
+        ? station.position 
+        : [station.position.lat || station.lat, station.position.lng || station.lng];
+    
+    // Remove old radius circle
+    if (station.radiusCircle) {
+        state.map.removeLayer(station.radiusCircle);
+    }
+    
+    // Calculate new radius
+    const { radius, maxDeviceDistance } = calculateStationRadius(
+        stationPosition, 
+        station.devices || []
+    );
+    
+    // Get unique color for this station if not already set
+    if (!station.color) {
+        station.color = getUniqueColor(stationName, 'station');
+    }
+    
+    // Create new radius circle with unique color
+    station.radiusCircle = L.circle(stationPosition, {
+        radius: radius,
+        color: station.color,
+        fillColor: station.color,
+        fillOpacity: 0.15,
+        weight: 3
+    }).addTo(state.map);
+    
+    console.log(`📍 Updated radius for "${stationName}": Max distance = ${maxDeviceDistance.toFixed(2)}m, Radius = ${radius.toFixed(2)}m`);
+}
+
+// Add station marker to map
+function addStationMarker(stationName, latlng, stationData) {
+    const onlineDevices = stationData.devices.filter(d => d.status === 'online').length;
+    const totalDevices = stationData.devices.length;
+    
+    // Calculate radius to ensure both station and all devices are within the circle
+    const { radius, maxDeviceDistance } = calculateStationRadius(
+        [latlng.lat, latlng.lng], 
+        stationData.devices || []
+    );
+    
+    if (maxDeviceDistance > 0) {
+        console.log(`📍 Station "${stationName}": Max device distance = ${maxDeviceDistance.toFixed(2)}m, Radius = ${radius.toFixed(2)}m`);
+    }
+    
+    // Get unique color for this station
+    if (!stationData.color) {
+        stationData.color = getUniqueColor(stationName, 'station');
+    }
+    
+    const radiusCircle = L.circle(latlng, {
+        radius: radius,
+        color: stationData.color,
+        fillColor: stationData.color,
+        fillOpacity: 0.15,
+        weight: 3
+    }).addTo(state.map);
+    
+    const marker = L.marker(latlng, {
+        icon: L.divIcon({
+            html: `<div style="background: ${stationData.status === 'online' ? '#10b981' : '#ef4444'}; 
+                   width: 32px; height: 32px; border-radius: 50%; border: 3px solid white; 
+                   display: flex; align-items: center; justify-content: center; position: relative;
+                   box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+                    <i class="fas ${stationData.icon}" style="color: white; font-size: 14px;"></i>
+                    ${totalDevices > 0 ? `
+                        <span style="position: absolute; top: -5px; right: -5px; background: #3b82f6; 
+                        color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; 
+                        display: flex; align-items: center; justify-content: center; border: 2px solid white;">
+                        ${onlineDevices}/${totalDevices}
+                        </span>
+                    ` : ''}
+                  </div>`,
+            className: 'station-marker',
+            iconSize: [32, 32],
+            iconAnchor: [16, 32]
+        })
+    }).addTo(state.map);
+    
+    // Get detection data from stationData or use defaults
+    // Handle both string ('Yes'/'No'/'Detected') and numeric (0 = No, >0 = Detected) formats
+    const humanDetection = stationData.humanDetection !== undefined 
+        ? stationData.humanDetection 
+        : (stationData.detections?.human !== undefined 
+            ? (typeof stationData.detections.human === 'number' ? (stationData.detections.human > 0 ? 'Detected' : 'No') : stationData.detections.human)
+            : 'No');
+    const chainsawDetection = stationData.chainsawDetection !== undefined 
+        ? stationData.chainsawDetection 
+        : (stationData.detections?.chainsaw !== undefined 
+            ? (typeof stationData.detections.chainsaw === 'number' ? (stationData.detections.chainsaw > 0 ? 'Detected' : 'No') : stationData.detections.chainsaw)
+            : 'No');
+    const suspiciousMovement = stationData.suspiciousMovement !== undefined 
+        ? stationData.suspiciousMovement 
+        : (stationData.detections?.suspicious !== undefined 
+            ? (typeof stationData.detections.suspicious === 'number' ? (stationData.detections.suspicious > 0 ? 'Detected' : 'No') : stationData.detections.suspicious)
+            : 'No');
+    
+    marker.bindPopup(`
+        <div class="custom-popup">
+            <h4>${stationName}</h4>
+            <ul class="popup-info">
+                <li><strong>Type:</strong> ${stationData.type}</li>
+                <li><strong>Status:</strong> <span class="popup-status ${stationData.status}">${stationData.status}</span></li>
+                <li><strong>Deteksi Human/Non Human:</strong> <span class="popup-status ${humanDetection === 'Yes' || humanDetection === 'Detected' ? 'online' : ''}">${humanDetection}</span></li>
+                <li><strong>Deteksi Chainsaw:</strong> <span class="popup-status ${chainsawDetection === 'Yes' || chainsawDetection === 'Detected' ? 'online' : ''}">${chainsawDetection}</span></li>
+                <li><strong>Deteksi Gerakan Mencurigakan:</strong> <span class="popup-status ${suspiciousMovement === 'Yes' || suspiciousMovement === 'Detected' ? 'online' : ''}">${suspiciousMovement}</span></li>
+            </ul>
+        </div>
+    `);
+    
+    // Store marker and circle references
+    stationData.marker = marker;
+    stationData.radiusCircle = radiusCircle;
+    stationData.position = [latlng.lat, latlng.lng];
+    stationData.stationName = stationName;
+    
+    // Setup real-time detection listener for station
+    setupStationDetectionListener(stationData);
+    
+    // Make draggable
+    marker.dragging.enable();
+    marker.on('dragend', function(e) {
+        const newPos = e.target.getLatLng();
+        stationData.position = [newPos.lat, newPos.lng];
+        
+        // Update station position
+        stationData.position = [newPos.lat, newPos.lng];
+        
+        // Update radius circle to include all devices
+        updateStationRadius(stationName);
+        
+        updateStationList();
+    });
+    
+    // Select on click
+    marker.on('click', function() {
+        selectStation(stationName);
+    });
+}
+
+// Add device marker to map
+function addDeviceMarker(device, stationName) {
+    const deviceType = deviceTypes[device.type] || deviceTypes.sensor;
+    const statusInfo = deviceStatuses[device.status] || deviceStatuses.offline;
+    
+    const marker = L.marker([device.lat, device.lng], {
+        icon: L.divIcon({
+            html: `<div style="background: ${statusInfo.color}; 
+                   width: 24px; height: 24px; border-radius: 50%; border: 2px solid white; 
+                   display: flex; align-items: center; justify-content: center; position: relative;
+                   box-shadow: 0 2px 6px rgba(0,0,0,0.3);">
+                    <i class="fas ${deviceType.icon}" style="color: white; font-size: 12px;"></i>
+                  </div>`,
+            className: 'device-marker',
+            iconSize: [24, 24],
+            iconAnchor: [12, 24]
+        })
+    }).addTo(state.map);
+    
+    // Get detection data from device or use defaults
+    // Handle both string ('Yes'/'No'/'Detected') and numeric (0 = No, >0 = Detected) formats
+    const humanDetection = device.humanDetection !== undefined 
+        ? device.humanDetection 
+        : (device.detections?.human !== undefined 
+            ? (typeof device.detections.human === 'number' ? (device.detections.human > 0 ? 'Detected' : 'No') : device.detections.human)
+            : 'No');
+    const chainsawDetection = device.chainsawDetection !== undefined 
+        ? device.chainsawDetection 
+        : (device.detections?.chainsaw !== undefined 
+            ? (typeof device.detections.chainsaw === 'number' ? (device.detections.chainsaw > 0 ? 'Detected' : 'No') : device.detections.chainsaw)
+            : 'No');
+    const suspiciousMovement = device.suspiciousMovement !== undefined 
+        ? device.suspiciousMovement 
+        : (device.detections?.suspicious !== undefined 
+            ? (typeof device.detections.suspicious === 'number' ? (device.detections.suspicious > 0 ? 'Detected' : 'No') : device.detections.suspicious)
+            : 'No');
+    
+    marker.bindPopup(`
+        <div class="custom-popup">
+            <h4>${device.name}</h4>
+            <ul class="popup-info">
+                <li><strong>Type:</strong> ${deviceType.type}</li>
+                <li><strong>Status:</strong> <span class="popup-status ${device.status}">${device.status}</span></li>
+                <li><strong>Deteksi Human/Non Human:</strong> <span class="popup-status ${humanDetection === 'Yes' || humanDetection === 'Detected' ? 'online' : ''}">${humanDetection}</span></li>
+                <li><strong>Deteksi Chainsaw:</strong> <span class="popup-status ${chainsawDetection === 'Yes' || chainsawDetection === 'Detected' ? 'online' : ''}">${chainsawDetection}</span></li>
+                <li><strong>Deteksi Gerakan Mencurigakan:</strong> <span class="popup-status ${suspiciousMovement === 'Yes' || suspiciousMovement === 'Detected' ? 'online' : ''}">${suspiciousMovement}</span></li>
+            </ul>
+        </div>
+    `);
+    
+    // Get unique color for device if not already set
+    if (!device.color) {
+        device.color = getUniqueColor(device.name, 'device');
+    }
+    
+    // Create radius circle for device
+    const deviceRadiusCircle = L.circle([device.lat, device.lng], {
+        radius: 100,
+        color: device.color,
+        fillColor: device.color,
+        fillOpacity: 0.12,
+        weight: 2
+    }).addTo(state.map);
+    
+    // Store marker and radius circle references
+    device.marker = marker;
+    device.radiusCircle = deviceRadiusCircle;
+    device.stationName = stationName;
+    
+    // Setup real-time detection listener for device
+    setupDeviceDetectionListener(device);
+    
+    // Make draggable
+    marker.dragging.enable();
+    marker.on('dragend', function(e) {
+        const newPos = e.target.getLatLng();
+        device.lat = newPos.lat;
+        device.lng = newPos.lng;
+        
+        // Update device's radius circle position
+        if (device.radiusCircle) {
+            state.map.removeLayer(device.radiusCircle);
+            device.radiusCircle = L.circle([newPos.lat, newPos.lng], {
+                radius: 100,
+                color: device.color,
+                fillColor: device.color,
+                fillOpacity: 0.12,
+                weight: 2
+            }).addTo(state.map);
+        }
+        
+        // Update the station's radius circle to include the moved device
+        updateStationRadius(stationName);
+        
+        updateStationList();
+    });
+    
+    // Show on map when clicked in list
+    marker.on('click', function() {
+        selectStation(stationName);
+    });
+}
+
+// Update station popup with detection data
+function updateStationPopup(stationData) {
+    if (!stationData.marker) return;
+    
+    // Ensure radius circle exists and has unique color - recreate if missing
+    if (!stationData.radiusCircle || !state.map.hasLayer(stationData.radiusCircle)) {
+        if (stationData.position && stationData.position.length === 2) {
+            // Ensure unique color is set
+            if (!stationData.color) {
+                stationData.color = getUniqueColor(stationData.stationName || stationData.name, 'station');
+            }
+            
+            // Calculate radius
+            const { radius } = calculateStationRadius(
+                stationData.position,
+                stationData.devices || []
+            );
+            
+            // Recreate radius circle with unique color
+            stationData.radiusCircle = L.circle(stationData.position, {
+                radius: radius,
+                color: stationData.color,
+                fillColor: stationData.color,
+                fillOpacity: 0.15,
+                weight: 3
+            }).addTo(state.map);
+            
+            console.log(`🔄 Recreated radius circle for station: ${stationData.stationName || stationData.name} (color: ${stationData.color})`);
+        }
+    } else {
+        // Ensure radius circle has the correct unique color (update if needed)
+        if (stationData.color && stationData.radiusCircle.options.color !== stationData.color) {
+            stationData.radiusCircle.setStyle({
+                color: stationData.color,
+                fillColor: stationData.color
+            });
+        }
+    }
+    
+    // Get detection data from stationData or use defaults
+    const humanDetection = stationData.humanDetection !== undefined ? stationData.humanDetection : (stationData.detections?.human !== undefined ? (stationData.detections.human > 0 ? 'Detected' : 'No') : 'No');
+    const chainsawDetection = stationData.chainsawDetection !== undefined ? stationData.chainsawDetection : (stationData.detections?.chainsaw !== undefined ? (stationData.detections.chainsaw > 0 ? 'Detected' : 'No') : 'No');
+    const suspiciousMovement = stationData.suspiciousMovement !== undefined ? stationData.suspiciousMovement : (stationData.detections?.suspicious !== undefined ? (stationData.detections.suspicious > 0 ? 'Detected' : 'No') : 'No');
+    
+    const popupContent = `
+        <div class="custom-popup">
+            <h4>${stationData.stationName || stationData.name}</h4>
+            <ul class="popup-info">
+                <li><strong>Type:</strong> ${stationData.type || 'Monitoring Hub'}</li>
+                <li><strong>Status:</strong> <span class="popup-status ${stationData.status || 'online'}">${stationData.status || 'online'}</span></li>
+                <li><strong>Deteksi Human/Non Human:</strong> <span class="popup-status ${humanDetection === 'Yes' || humanDetection === 'Detected' ? 'online' : ''}">${humanDetection}</span></li>
+                <li><strong>Deteksi Chainsaw:</strong> <span class="popup-status ${chainsawDetection === 'Yes' || chainsawDetection === 'Detected' ? 'online' : ''}">${chainsawDetection}</span></li>
+                <li><strong>Deteksi Gerakan Mencurigakan:</strong> <span class="popup-status ${suspiciousMovement === 'Yes' || suspiciousMovement === 'Detected' ? 'online' : ''}">${suspiciousMovement}</span></li>
+            </ul>
+        </div>
+    `;
+    
+    stationData.marker.setPopupContent(popupContent);
+}
+
+// Update device popup with detection data
+function updateDevicePopup(device) {
+    if (!device.marker) return;
+    
+    // Ensure radius circle exists and has unique color - recreate if missing
+    if (!device.radiusCircle || !state.map.hasLayer(device.radiusCircle)) {
+        if (device.lat && device.lng) {
+            // Ensure unique color is set
+            if (!device.color) {
+                device.color = getUniqueColor(device.name, 'device');
+            }
+            
+            // Recreate radius circle with unique color
+            device.radiusCircle = L.circle([device.lat, device.lng], {
+                radius: 100,
+                color: device.color,
+                fillColor: device.color,
+                fillOpacity: 0.12,
+                    weight: 2
+            }).addTo(state.map);
+            
+            console.log(`🔄 Recreated radius circle for device: ${device.name} (color: ${device.color})`);
+        }
+    } else {
+        // Ensure radius circle has the correct unique color (update if needed)
+        if (device.color && device.radiusCircle.options.color !== device.color) {
+            device.radiusCircle.setStyle({
+                color: device.color,
+                fillColor: device.color
+            });
+        }
+    }
+    
+    const deviceType = deviceTypes[device.type] || deviceTypes.sensor;
+    
+    // Get detection data from device or use defaults
+    const humanDetection = device.humanDetection !== undefined ? device.humanDetection : (device.detections?.human !== undefined ? (device.detections.human > 0 ? 'Detected' : 'No') : 'No');
+    const chainsawDetection = device.chainsawDetection !== undefined ? device.chainsawDetection : (device.detections?.chainsaw !== undefined ? (device.detections.chainsaw > 0 ? 'Detected' : 'No') : 'No');
+    const suspiciousMovement = device.suspiciousMovement !== undefined ? device.suspiciousMovement : (device.detections?.suspicious !== undefined ? (device.detections.suspicious > 0 ? 'Detected' : 'No') : 'No');
+    
+    const popupContent = `
+        <div class="custom-popup">
+            <h4>${device.name}</h4>
+            <ul class="popup-info">
+                <li><strong>Type:</strong> ${deviceType.type}</li>
+                <li><strong>Status:</strong> <span class="popup-status ${device.status || 'online'}">${device.status || 'online'}</span></li>
+                <li><strong>Deteksi Human/Non Human:</strong> <span class="popup-status ${humanDetection === 'Yes' || humanDetection === 'Detected' ? 'online' : ''}">${humanDetection}</span></li>
+                <li><strong>Deteksi Chainsaw:</strong> <span class="popup-status ${chainsawDetection === 'Yes' || chainsawDetection === 'Detected' ? 'online' : ''}">${chainsawDetection}</span></li>
+                <li><strong>Deteksi Gerakan Mencurigakan:</strong> <span class="popup-status ${suspiciousMovement === 'Yes' || suspiciousMovement === 'Detected' ? 'online' : ''}">${suspiciousMovement}</span></li>
+            </ul>
+        </div>
+    `;
+    
+    device.marker.setPopupContent(popupContent);
+}
+
+// Setup real-time detection listener for station
+function setupStationDetectionListener(stationData) {
+    if (!window.firebaseApp || !window.firebaseApp.database || !stationData.stationId) {
+        console.warn('⚠️ Cannot setup station detection listener: Firebase or stationId not available');
+        return;
+    }
+    
+    const database = window.firebaseApp.database;
+    const stationId = stationData.stationId;
+    
+    // Listen to station detections from Realtime Database
+    // Try multiple possible paths
+    const paths = [
+        `stations/${stationId}/detections`,
+        `stations/${stationId}/latest`,
+        `monitoring/stations/${stationId}/latest`,
+        `monitoring/stations/${stationId}/detections`
+    ];
+    
+    // Try first available path
+    let listener = null;
+    for (const path of paths) {
+        try {
+            listener = database.ref(path).on('value', (snapshot) => {
+                const detectionData = snapshot.val();
+                if (detectionData) {
+                    // Update stationData with latest detection data
+                    stationData.detections = {
+                        human: detectionData.human || detectionData.humanDetection || 0,
+                        chainsaw: detectionData.chainsaw || detectionData.chainsawDetection || 0,
+                        suspicious: detectionData.suspicious || detectionData.suspiciousMovement || detectionData.suspiciousActivity || 0
+                    };
+                    
+                    // Also update direct properties for compatibility
+                    stationData.humanDetection = stationData.detections.human > 0 ? 'Detected' : 'No';
+                    stationData.chainsawDetection = stationData.detections.chainsaw > 0 ? 'Detected' : 'No';
+                    stationData.suspiciousMovement = stationData.detections.suspicious > 0 ? 'Detected' : 'No';
+                    
+                    // Update popup
+                    updateStationPopup(stationData);
+                    console.log(`✅ Station ${stationId} detection updated:`, stationData.detections);
+                }
+            }, (error) => {
+                console.warn(`⚠️ Error listening to ${path}:`, error);
+            });
+            
+            console.log(`📡 Listening to station detections at: ${path}`);
+            break; // Successfully set up listener
+        } catch (error) {
+            console.warn(`⚠️ Failed to setup listener at ${path}:`, error);
+            continue;
+        }
+    }
+    
+    // Store listener reference for cleanup
+    if (listener) {
+        stationData.detectionListener = { path: paths[0], listener };
+    }
+}
+
+// Setup real-time detection listener for device
+function setupDeviceDetectionListener(device) {
+    if (!window.firebaseApp || !window.firebaseApp.database || !device.deviceId) {
+        console.warn('⚠️ Cannot setup device detection listener: Firebase or deviceId not available');
+        return;
+    }
+    
+    const database = window.firebaseApp.database;
+    const deviceId = device.deviceId;
+    
+    // Listen to device detections from Realtime Database
+    // Try multiple possible paths (ordered by priority)
+    const paths = [
+        `monitoring/${deviceId}/latest`, // Most likely path based on monitoring.html
+        `monitoring/${deviceId}`, // Fallback to root monitoring path
+        `devices/${deviceId}/detections`,
+        `devices/${deviceId}/latest`,
+        `monitoring/devices/${deviceId}/latest`,
+        `monitoring/devices/${deviceId}/detections`
+    ];
+    
+    // Try first available path
+    let listener = null;
+    let listenerPath = null;
+    
+    for (const path of paths) {
+        try {
+            listener = database.ref(path).on('value', (snapshot) => {
+                const detectionData = snapshot.val();
+                if (detectionData) {
+                    // Handle different data formats
+                    // Format 1: Direct values (human: 5, chainsaw: 2, suspicious: 1)
+                    // Format 2: Object with nested data
+                    // Format 3: Latest record from monitoring array
+                    
+                    let human = 0, chainsaw = 0, suspicious = 0;
+                    
+                    // If it's an array (latest monitoring data), get the most recent
+                    if (Array.isArray(detectionData) && detectionData.length > 0) {
+                        const latest = detectionData[detectionData.length - 1];
+                        human = latest.human || latest.humanDetection || 0;
+                        chainsaw = latest.chainsaw || latest.chainsawDetection || 0;
+                        suspicious = latest.suspicious || latest.suspiciousMovement || latest.suspiciousActivity || 0;
+                    } else if (typeof detectionData === 'object') {
+                        // Direct object with detection values
+                        human = detectionData.human || detectionData.humanDetection || 0;
+                        chainsaw = detectionData.chainsaw || detectionData.chainsawDetection || 0;
+                        suspicious = detectionData.suspicious || detectionData.suspiciousMovement || detectionData.suspiciousActivity || 0;
+                    }
+                    
+                    // Update device with latest detection data
+                    device.detections = {
+                        human: human,
+                        chainsaw: chainsaw,
+                        suspicious: suspicious
+                    };
+                    
+                    // Also update direct properties for compatibility
+                    device.humanDetection = human > 0 ? 'Detected' : 'No';
+                    device.chainsawDetection = chainsaw > 0 ? 'Detected' : 'No';
+                    device.suspiciousMovement = suspicious > 0 ? 'Detected' : 'No';
+                    
+                    // Update popup
+                    updateDevicePopup(device);
+                    console.log(`✅ Device ${deviceId} detection updated:`, device.detections);
+                }
+            }, (error) => {
+                console.warn(`⚠️ Error listening to ${path}:`, error);
+            });
+            
+            listenerPath = path;
+            console.log(`📡 Listening to device detections at: ${path}`);
+            break; // Successfully set up listener
+        } catch (error) {
+            console.warn(`⚠️ Failed to setup listener at ${path}:`, error);
+            continue;
+        }
+    }
+    
+    // If no specific path worked, also listen to general monitoring path and filter by deviceId
+    if (!listener) {
+        try {
+            listener = database.ref('monitoring')
+                .orderByChild('deviceId')
+                .equalTo(deviceId)
+                .limitToLast(1)
+                .on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        // Get the latest record
+                        const records = Object.values(data);
+                        if (records.length > 0) {
+                            const latest = records[records.length - 1];
+                            
+                            let human = latest.human || latest.humanDetection || 0;
+                            let chainsaw = latest.chainsaw || latest.chainsawDetection || 0;
+                            let suspicious = latest.suspicious || latest.suspiciousMovement || latest.suspiciousActivity || 0;
+                            
+                            // Update device with latest detection data
+                            device.detections = {
+                                human: human,
+                                chainsaw: chainsaw,
+                                suspicious: suspicious
+                            };
+                            
+                            // Also update direct properties for compatibility
+                            device.humanDetection = human > 0 ? 'Detected' : 'No';
+                            device.chainsawDetection = chainsaw > 0 ? 'Detected' : 'No';
+                            device.suspiciousMovement = suspicious > 0 ? 'Detected' : 'No';
+                            
+                            // Update popup
+                            updateDevicePopup(device);
+                            console.log(`✅ Device ${deviceId} detection updated from monitoring:`, device.detections);
+                        }
+                    }
+                }, (error) => {
+                    console.warn(`⚠️ Error listening to monitoring path:`, error);
+                });
+            
+            listenerPath = 'monitoring (filtered by deviceId)';
+            console.log(`📡 Listening to device detections from monitoring path (deviceId: ${deviceId})`);
+        } catch (error) {
+            console.warn(`⚠️ Failed to setup monitoring listener:`, error);
+        }
+    }
+    
+    // Store listener reference for cleanup
+    if (listener) {
+        device.detectionListener = { path: listenerPath, listener };
+    }
+}
+
+// Select a station
+function selectStation(stationName) {
+    state.selectedStation = stationName;
+    
+    // Update UI
+    document.querySelectorAll('.station-item').forEach(item => {
+        item.classList.remove('active');
+        if (item.dataset.station === stationName) {
+            item.classList.add('active');
+            item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    });
+    
+    // Center map and open popup
+    const station = state.stations[stationName];
+    if (station && station.marker) {
+        state.map.flyTo(station.position, 15);
+        station.marker.openPopup();
+    }
+}
+
+// Update station list
+function updateStationList() {
+    const stationList = document.getElementById('mapStationList');
+    
+    if (Object.keys(state.stations).length === 0) {
+        stationList.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-map-marker-alt"></i>
+                <h4>No Stations Found</h4>
+                <p>Add your first station to begin monitoring</p>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = '';
+    
+    Object.entries(state.stations).forEach(([name, data]) => {
+        const onlineDevices = data.devices.filter(d => d.status === 'online').length;
+        const totalDevices = data.devices.length;
+        
+        html += `
+            <div class="station-item ${data.status} ${state.selectedStation === name ? 'active' : ''}" 
+                 data-station="${name}"
+                 onclick="selectStation('${name}')">
+                <div class="station-header">
+                    <div class="station-info">
+                        <div class="station-icon">
+                            <i class="fas ${data.icon}"></i>
+                        </div>
+                        <div class="station-details">
+                            <h4>${name}</h4>
+                            <div class="station-type">${data.type}</div>
+                        </div>
+                    </div>
+                    <div class="station-status">${data.status}</div>
+                </div>
+                
+                <div class="station-stats">
+                    <div class="stat">
+                        <i class="fas fa-battery-${getBatteryIcon(data.battery)}"></i>
+                        <span class="stat-value">${data.battery}%</span>
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-wifi"></i>
+                        <span class="stat-value">${data.signal}</span>
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-microchip"></i>
+                        <span class="stat-value">${onlineDevices}/${totalDevices}</span>
+                    </div>
+                </div>
+                
+                ${totalDevices > 0 ? `
+                    <div class="devices-section">
+                        <div class="devices-header">
+                            <h5>Connected Devices</h5>
+                            <button class="add-device-btn" onclick="event.stopPropagation(); openDeviceModal('${name}')">
+                                <i class="fas fa-plus"></i> Add Device
+                            </button>
+                        </div>
+                        <div class="devices-list">
+                            ${data.devices.map((device, index) => `
+                                <div class="device-item" style="border-left-color: ${deviceTypes[device.type]?.color || '#64748b'}"
+                                     onclick="event.stopPropagation(); selectDevice('${name}', ${index})">
+                                    <div class="device-header">
+                                        <div class="device-name">${device.name}</div>
+                                        <div class="device-type-badge">${deviceTypes[device.type]?.type || device.type}</div>
+                                    </div>
+                                    <div class="device-status status-${device.status}">
+                                        <div class="status-dot"></div>
+                                        <span>${deviceStatuses[device.status]?.text || device.status}</span>
+                                    </div>
+                                    ${device.lat && device.lng ? `
+                                        <div class="device-location">
+                                            <i class="fas fa-location-dot"></i>
+                                            ${device.lat.toFixed(4)}, ${device.lng.toFixed(4)}
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : `
+                    <div class="devices-section">
+                        <button class="add-device-btn" style="width: 100%; justify-content: center; margin-top: 8px;"
+                                onclick="event.stopPropagation(); openDeviceModal('${name}')">
+                            <i class="fas fa-plus"></i> Add First Device
+                        </button>
+                    </div>
+                `}
+            </div>
+        `;
+    });
+    
+    stationList.innerHTML = html;
+}
+
+// Open station modal
+function openStationModal() {
+    const modal = document.getElementById('stationModal');
+    
+    // Reset form
+    document.getElementById('stationForm').reset();
+    document.getElementById('stationTypeIcon').value = '';
+    document.querySelectorAll('#stationModal .select-option').forEach(opt => opt.classList.remove('selected'));
+    document.querySelectorAll('#stationModal .location-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById('stationUseCurrentLocation').classList.add('active');
+    document.getElementById('saveStationBtn').disabled = true;
+    
+    // Set current location as default if available
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                document.getElementById('stationLatitude').value = position.coords.latitude.toFixed(6);
+                document.getElementById('stationLongitude').value = position.coords.longitude.toFixed(6);
+                validateStationForm();
+            },
+            () => {
+                // Use map center as fallback
+                const center = state.map.getCenter();
+                document.getElementById('stationLatitude').value = center.lat.toFixed(6);
+                document.getElementById('stationLongitude').value = center.lng.toFixed(6);
+                validateStationForm();
+            }
+        );
+    } else {
+        // Use map center if geolocation not available
+        const center = state.map.getCenter();
+        document.getElementById('stationLatitude').value = center.lat.toFixed(6);
+        document.getElementById('stationLongitude').value = center.lng.toFixed(6);
+        validateStationForm();
+    }
+    
+    // Show modal
+    modal.style.display = 'flex';
+    document.getElementById('stationName').focus();
+}
+
+// Open device modal - FIXED
+function openDeviceModal(stationName) {
+    const station = state.stations[stationName];
+    
+    if (!station) {
+        console.error('Station not found:', stationName);
+        showNotification('Station not found!', 'error');
+        return;
+    }
+    
+    // Pastikan stationId tersedia
+    if (!station.stationId) {
+        console.error('Station ID not found for:', stationName);
+        console.log('Station data:', station);
+        
+        // Coba ambil stationId dari Firestore
+        if (window.firebaseApp && window.firebaseApp.firebaseDB) {
+            // Cari station di Firestore berdasarkan nama
+            window.firebaseApp.firebaseDB.getStationByName(stationName)
+                .then(firestoreStation => {
+                    if (firestoreStation && firestoreStation.id) {
+                        station.stationId = firestoreStation.id;
+                        console.log('✅ Found station ID from Firestore:', station.stationId);
+                        proceedWithDeviceModal(stationName, station);
+                    } else {
+                        showNotification('Cannot find station ID. Please try again.', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error getting station ID:', error);
+                    showNotification('Cannot open device modal. Station not found in database.', 'error');
+                });
+        } else {
+            showNotification('Database connection error.', 'error');
+        }
+        return;
+    }
+    
+    proceedWithDeviceModal(stationName, station);
+}
+
+// Helper function to proceed with device modal
+function proceedWithDeviceModal(stationName, station) {
+    console.log(`Opening device modal for station: ${stationName} (ID: ${station.stationId})`);
+    
+    // Set current station dengan object yang berisi name dan id
+    currentStationForDevice = {
+        name: stationName,
+        id: station.stationId
+    };
+    
+    // Set station location as default
+    if (station.position) {
+        document.getElementById('latitude').value = station.position[0].toFixed(6);
+        document.getElementById('longitude').value = station.position[1].toFixed(6);
+    }
+    
+    // Update UI dengan station info (jika ada element untuk ini)
+    const currentStationNameEl = document.getElementById('currentStationName');
+    if (currentStationNameEl) {
+        currentStationNameEl.textContent = stationName;
+    }
+    
+    // Reset form
+    document.getElementById('deviceForm').reset();
+    document.getElementById('saveDeviceBtn').disabled = true;
+    
+    // Reset location method
+    document.querySelectorAll('#deviceModal .location-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById('useStationLocation').classList.add('active');
+    
+    // Show modal
+    document.getElementById('deviceModal').style.display = 'flex';
+    document.getElementById('deviceName').focus();
+}
+
+// Tambahkan event listener untuk save device button
+document.getElementById('saveDeviceBtn').addEventListener('click', async function(e) {
+    e.preventDefault();
+    
+    const deviceName = document.getElementById('deviceName').value.trim();
+    const description = document.getElementById('deviceDescription').value.trim();
+    const latitude = parseFloat(document.getElementById('latitude').value);
+    const longitude = parseFloat(document.getElementById('longitude').value);
+    
+    // Default device type (sensor)
+    const deviceType = 'sensor';
+    
+    // Validasi
+    if (!deviceName || isNaN(latitude) || isNaN(longitude)) {
+        showNotification('Please fill all required fields', 'error');
+        return;
+    }
+    
+    // Validasi currentStationForDevice
+    if (!currentStationForDevice || !currentStationForDevice.id) {
+        console.error('No station selected or station ID missing');
+        showNotification('Please select a station first', 'error');
+        return;
+    }
+    
+    // Data device untuk Firestore
+    const deviceData = {
+        name: deviceName,
+        type: deviceType,
+        status: 'online',
+        lat: latitude,
+        lng: longitude,
+        description: description || `Device at ${currentStationForDevice.name}`,
+        stationName: currentStationForDevice.name,
+        stationId: currentStationForDevice.id,
+        color: getUniqueColor(deviceName, 'device'),
+        userEmail: (window.firebaseApp && window.firebaseApp.auth && window.firebaseApp.auth.currentUser) ? window.firebaseApp.auth.currentUser.email : 'anonymous',
+        userId: (window.firebaseApp && window.firebaseApp.auth && window.firebaseApp.auth.currentUser) ? window.firebaseApp.auth.currentUser.uid : null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+    };
+    
+    try {
+        // Simpan ke Firestore (WAJIB - ini yang menyimpan device ke database)
+        if (window.firebaseApp && window.firebaseApp.firebaseDB) {
+            console.log(`💾 Saving device "${deviceName}" to Firestore for station ID: ${currentStationForDevice.id}...`);
+            
+            const deviceId = await window.firebaseApp.firebaseDB.addDevice(currentStationForDevice.id, deviceData);
+            
+            if (!deviceId) {
+                throw new Error('No device ID returned from Firestore');
+            }
+            
+            console.log('✅ Device saved to Firestore with ID:', deviceId);
+            
+            // Verifikasi: Load ulang device dari Firestore untuk memastikan tersimpan
+            try {
+                const savedDevices = await window.firebaseApp.firebaseDB.getDevices(station.stationId);
+                console.log(`✅ Verification: Found ${savedDevices.length} devices in Firestore for station ${station.stationId}`);
+                const savedDevice = savedDevices.find(d => (d.id === deviceId || d.deviceId === deviceId));
+                if (savedDevice) {
+                    console.log(`✅ Verification: Device "${deviceName}" confirmed in Firestore`);
+                } else {
+                    console.warn(`⚠️ Verification: Device "${deviceName}" not found in Firestore after save`);
+                }
+            } catch (verifyError) {
+                console.warn('⚠️ Could not verify device save:', verifyError);
+            }
+            
+            // Tambahkan deviceId ke data device
+            deviceData.deviceId = deviceId;
+            deviceData.id = deviceId;
+            
+            // Verifikasi: Load ulang device dari Firestore untuk memastikan tersimpan
+            try {
+                const savedDevices = await window.firebaseApp.firebaseDB.getDevices(currentStationForDevice.id);
+                console.log(`✅ Verification: Found ${savedDevices.length} devices in Firestore for station ${currentStationForDevice.id}`);
+                const savedDevice = savedDevices.find(d => (d.id === deviceId || d.deviceId === deviceId));
+                if (savedDevice) {
+                    console.log(`✅ Verification: Device "${deviceName}" confirmed in Firestore`);
+                } else {
+                    console.warn(`⚠️ Verification: Device "${deviceName}" not found in Firestore after save`);
+                }
+            } catch (verifyError) {
+                console.warn('⚠️ Could not verify device save:', verifyError);
+            }
+            
+            // Cari station di state lokal
+            const station = state.stations[currentStationForDevice.name];
+            
+            if (!station) {
+                console.warn(`Station "${currentStationForDevice.name}" not found in local state, reloading...`);
+                // Reload semua stations
+                loadStationsFromFirestore();
+                showNotification(`Device "${deviceName}" saved! Reloading stations...`, 'success');
+            } else {
+                // Tambahkan device ke station di state lokal
+                if (!station.devices) {
+                    station.devices = [];
+                }
+                
+                // Hapus device lama jika ada (berdasarkan deviceId)
+                station.devices = station.devices.filter(d => d.deviceId !== deviceId && d.id !== deviceId);
+                
+                // Tambahkan device baru
+                station.devices.push(deviceData);
+                
+                // Hapus marker lama jika ada
+                const oldDevice = station.devices.find(d => (d.deviceId === deviceId || d.id === deviceId) && d.marker);
+                if (oldDevice && oldDevice.marker && state.map.hasLayer(oldDevice.marker)) {
+                    state.map.removeLayer(oldDevice.marker);
+                }
+                if (oldDevice && oldDevice.radiusCircle && state.map.hasLayer(oldDevice.radiusCircle)) {
+                    state.map.removeLayer(oldDevice.radiusCircle);
+                }
+                
+                // Tambahkan marker ke peta
+                addDeviceMarker(deviceData, currentStationForDevice.name);
+                
+                // Update radius station
+                updateStationRadius(currentStationForDevice.name);
+                updateStationList();
+                updateCounts();
+                
+                console.log(`✅ Device "${deviceName}" successfully added to station "${currentStationForDevice.name}"`);
+            }
+        } else {
+            throw new Error('Firebase not available');
+        }
+        
+        // Tutup modal
+        document.getElementById('deviceModal').style.display = 'none';
+        currentStationForDevice = null;
+        
+        // Reset form
+        document.getElementById('deviceForm').reset();
+        
+        // Notifikasi sukses
+        showNotification(`Device "${deviceName}" added successfully!`);
+        
+    } catch (error) {
+        console.error('❌ Error saving device to Firestore:', error);
+        showNotification('Failed to save: ' + error.message, 'error');
+    }
+});
+
+
+// Select device
+function selectDevice(stationName, deviceIndex) {
+    const station = state.stations[stationName];
+    if (!station || !station.devices[deviceIndex]) return;
+    
+    const device = station.devices[deviceIndex];
+    
+    // Fly to device location
+    state.map.flyTo([device.lat, device.lng], 16);
+    
+    // Open device popup
+    if (device.marker) {
+        device.marker.openPopup();
+    }
+    
+    // Select the station
+    selectStation(stationName);
+}
+
+// Get battery icon based on percentage
+function getBatteryIcon(battery) {
+    if (battery > 80) return 'full';
+    if (battery > 60) return 'three-quarters';
+    if (battery > 40) return 'half';
+    if (battery > 20) return 'quarter';
+    return 'empty';
+}
+
+// Update counts
+function updateCounts() {
+    const stations = Object.keys(state.stations).length;
+    const onlineStations = Object.values(state.stations).filter(s => s.status === 'online').length;
+    const totalDevices = Object.values(state.stations).reduce((sum, s) => sum + s.devices.length, 0);
+    
+    document.getElementById('stationCount').textContent = stations;
+    document.getElementById('onlineCount').textContent = onlineStations;
+    document.getElementById('deviceCount').textContent = totalDevices;
+}
+
+// Filter stations
+function filterStations(searchTerm) {
+    const items = document.querySelectorAll('.station-item');
+    let visibleCount = 0;
+    
+    items.forEach(item => {
+        const stationName = item.dataset.station.toLowerCase();
+        const shouldShow = stationName.includes(searchTerm) || 
+                          item.textContent.toLowerCase().includes(searchTerm);
+        
+        item.style.display = shouldShow ? 'flex' : 'none';
+        if (shouldShow) visibleCount++;
+    });
+    
+    // Show empty state if no results
+    const stationList = document.getElementById('mapStationList');
+    const emptyState = stationList.querySelector('.empty-state');
+    
+    if (visibleCount === 0 && !emptyState) {
+        stationList.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-search"></i>
+                <h4>No stations found</h4>
+                <p>Try a different search term</p>
+            </div>
+        `;
+    } else if (visibleCount > 0 && emptyState) {
+        updateStationList();
+    }
+}
+
+// Show notification
+function showNotification(message, type = 'success') {
+    // Remove existing notifications
+    const existing = document.querySelector('.notification');
+    if (existing) existing.remove();
+    
+    // Create notification
+    const notification = document.createElement('div');
+    notification.className = `notification ${type === 'error' ? 'error' : ''}`;
+    notification.innerHTML = `
+        <i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'}"></i>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
+// Handle window resize
+window.addEventListener('resize', () => {
+    if (state.map) {
+        setTimeout(() => state.map.invalidateSize(), 100);
+    }
+});
+
+// Auto-update statuses (simulated)
+setInterval(() => {
+    Object.entries(state.stations).forEach(([name, data]) => {
+        // Random status changes (10% chance)
+        if (Math.random() < 0.1) {
+            data.status = data.status === 'online' ? 'offline' : 'online';
+            data.battery = Math.max(0, Math.min(100, data.battery + (Math.random() * 10 - 5)));
+            
+            // Update marker
+            if (data.marker) {
+                const markerDiv = data.marker._icon;
+                if (markerDiv) {
+                    markerDiv.style.background = data.status === 'online' ? '#10b981' : '#ef4444';
+                }
+            }
+        }
+        
+        // Update device statuses
+        data.devices.forEach(device => {
+            if (Math.random() < 0.15) {
+                const statusKeys = Object.keys(deviceStatuses);
+                const newStatus = statusKeys[Math.floor(Math.random() * statusKeys.length)];
+                device.status = newStatus;
+                
+                // Update device marker
+                if (device.marker) {
+                    const statusInfo = deviceStatuses[newStatus];
+                    const markerDiv = device.marker._icon;
+                    if (markerDiv && statusInfo) {
+                        markerDiv.style.background = statusInfo.color;
+                    }
+                }
+            }
+        });
+    });
+    
+    updateStationList();
+    updateCounts();
+}, 30000);
+    </script>
+<!-- Hapus script type="module" dan ganti dengan ini: -->
+<script src="/js/firebase-config.js"></script>
+<script>
+// Tunggu Firebase siap
+function waitForFirebase(callback) {
+    if (window.firebaseDB) {
+        callback();
+        return;
+    }
+    
+    // Coba beberapa kali
+    let attempts = 0;
+    const maxAttempts = 50; // 5 detik
+    
+    const checkInterval = setInterval(() => {
+        attempts++;
+        if (window.firebaseDB) {
+            clearInterval(checkInterval);
+            console.log('Firebase found after', attempts, 'attempts');
+            callback();
+        } else if (attempts >= maxAttempts) {
+            clearInterval(checkInterval);
+            console.error('Firebase not found after max attempts');
+            // Tetap jalankan callback dengan fallback
+            callback();
+        }
+    }, 100);
+}
+
+// Inisialisasi setelah Firebase siap
+waitForFirebase(function() {
+    console.log('Initializing Firebase integration...');
+    
+    // Sekarang window.firebaseDB seharusnya tersedia
+    
+    // 1. Override save station button
+    const saveStationBtn = document.getElementById('saveStationBtn');
+    if (saveStationBtn && window.firebaseDB && window.firebaseDB.addStation) {
+        console.log('Overriding save station button');
+        
+        // Simpan handler asli
+        const originalHandler = saveStationBtn.onclick;
+        
+// Fallback sample data
+function loadSampleData() {
+    console.log('📝 Loading sample data (fallback)...');
+    
+    const sampleStations = {
+        'Main Station Jakarta': {
+            position: [-6.200000, 106.816666],
+            status: 'online',
+            type: 'Monitoring Hub',
+            icon: 'fa-hubspot',
+            battery: 85,
+            signal: 'strong',
+            devices: [
+                { 
+                    name: 'ESP32-CAM 01',
+                    type: 'camera',
+                    status: 'online',
+                    lat: -6.200100,
+                    lng: 106.816766,
+                    description: 'Main surveillance camera'
+                }
+            ]
+        }
+    };
+    
+    // Add sample stations
+    Object.entries(sampleStations).forEach(([name, data]) => {
+        addStation(name, L.latLng(data.position[0], data.position[1]), data);
+    });
+    
+    updateCounts();
+}
+    // Ganti dengan:
+    saveStationBtn.onclick = async function(e) {
+        e.preventDefault();
+        
+        // Ambil data dari form
+        const stationName = document.getElementById('stationName').value.trim();
+        const stationDescription = document.getElementById('stationDescription').value.trim();
+        const latitude = parseFloat(document.getElementById('stationLatitude').value);
+        const longitude = parseFloat(document.getElementById('stationLongitude').value);
+        
+        // Validasi
+        if (!stationName || isNaN(latitude) || isNaN(longitude)) {
+            showNotification('Please fill all required fields', 'error');
+            return;
+        }
+        
+        // Data untuk Firestore
+        const stationData = {
+            name: stationName,
+            description: stationDescription,
+            lat: latitude,
+            lng: longitude,
+            status: 'online',
+            type: 'Monitoring Hub',
+            icon: 'fa-hubspot',
+            battery: 100,
+            signal: 'strong',
+            deviceCount: 0, // Tambahkan deviceCount
+            userEmail: (window.firebaseApp && window.firebaseApp.auth && window.firebaseApp.auth.currentUser) ? window.firebaseApp.auth.currentUser.email : 'anonymous',
+            userId: (window.firebaseApp && window.firebaseApp.auth && window.firebaseApp.auth.currentUser) ? window.firebaseApp.auth.currentUser.uid : null
+        };
+        
+        try {
+            // Simpan ke Firestore
+            if (window.firebaseApp && window.firebaseApp.firebaseDB) {
+                const stationId = await window.firebaseApp.firebaseDB.addStation(stationData);
+            console.log('✅ Station saved to Firestore:', stationId);
+            
+            // Tutup modal
+            document.getElementById('stationModal').style.display = 'none';
+            
+            // Reset form
+            document.getElementById('stationForm').reset();
+            
+            // Notifikasi sukses
+            showNotification(`Station "${stationName}" saved successfully!`);
+            } else {
+                throw new Error('Firebase not available');
+            }
+        } catch (error) {
+            console.error('❌ Error saving station to Firestore:', error);
+            showNotification('Failed to save: ' + error.message, 'error');
+        }
+    };
+    }
+});
+</script>
+
+<!-- PWA Install Button -->
+<button id="pwa-install-btn" class="pwa-install-button" style="display: none;">
+    <i class="fas fa-download"></i>
+    <span>Install App</span>
+</button>
+
+<style>
+    .pwa-install-button {
+        position: fixed;
+        bottom: 90px;
+        right: 20px;
+        background: linear-gradient(135deg, #31694E 0%, #2d5a44 100%);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 14px 28px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 16px rgba(49, 105, 78, 0.4);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s ease;
+        font-family: 'Inter', sans-serif;
+        animation: slideInUp 0.3s ease;
+    }
+    
+    .pwa-install-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(49, 105, 78, 0.5);
+        background: linear-gradient(135deg, #2d5a44 0%, #31694E 100%);
+    }
+    
+    .pwa-install-button:active {
+        transform: translateY(0);
+    }
+    
+    .pwa-install-button i {
+        font-size: 16px;
+    }
+    
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .pwa-install-button {
+            bottom: 100px;
+            right: 15px;
+            padding: 12px 20px;
+            font-size: 14px;
+        }
+    }
+</style>
+
+<!-- PWA Install Script -->
+<script src="/js/pwa-install.js"></script>
+</body>
+</html> 
+

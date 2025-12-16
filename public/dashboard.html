@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - VoxSilva</title>
+    <meta name="theme-color" content="#2c4d32">
+    <meta name="description" content="VoxSilva - Platform AI untuk Lindungi Hutan dari Penebangan Liar">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/logo192.png">
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-green: #2c4d32;
+            --primary-green-dark: #1a3320;
+            --primary-green-light: #3d6b45;
+            --accent-green: #4caf50;
+            --accent-light: #81c784;
+            --bg-primary: #f8faf9;
+            --bg-card: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --text-tertiary: #999999;
+            --border-color: #e0e0e0;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
+            --shadow-lg: 0 8px 32px rgba(0,0,0,0.16);
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --spacing-2xl: 3rem;
+            --border-radius-sm: 8px;
+            --border-radius-md: 12px;
+            --border-radius-lg: 16px;
+            --border-radius-xl: 24px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Header Styles */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-green-dark) 100%);
+            color: white;
+            padding: var(--spacing-md) var(--spacing-lg);
+            box-shadow: var(--shadow-md);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: var(--border-radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo-icon i {
+            font-size: 1.5rem;
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .page-indicator {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .logo-subtitle {
+            font-size: 0.75rem;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+
+        .action-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--border-radius-sm);
+            border: none;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            backdrop-filter: blur(10px);
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .action-btn.green {
+            background: var(--accent-green);
+            font-weight: 700;
+        }
+
+        .action-btn.green:hover {
+            background: var(--accent-light);
+        }
+
+        /* Profile Dropdown */
+        .profile-dropdown {
+            position: relative;
+        }
+
+        .profile-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+        }
+
+        .profile-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            object-fit: cover;
+        }
+
+        .profile-btn i {
+            font-size: 12px;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+            min-width: 250px;
+            display: none;
+            z-index: 1001;
+        }
+
+        .profile-dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        .dropdown-header {
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .dropdown-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .dropdown-user-info h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .dropdown-user-info p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 8px 0;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background: var(--bg-primary);
+        }
+
+        .dropdown-item i {
+            width: 20px;
+            color: var(--text-secondary);
+        }
+
+        .dropdown-item.text-danger {
+            color: #dc3545;
+        }
+
+        .dropdown-item.text-danger i {
+            color: #dc3545;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-lg);
+            padding-bottom: 120px;
+        }
+
+        /* Profile Card */
+        .profile-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f0f7f1 100%);
+            border-radius: var(--border-radius-xl);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+            box-shadow: var(--shadow-md);
+            display: flex;
+            gap: var(--spacing-lg);
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(76, 175, 80, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--accent-green);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .profile-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xs);
+        }
+
+        .profile-name {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-green);
+            margin: 0;
+        }
+
+        .profile-detail {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        .profile-detail i {
+            width: 16px;
+            color: var(--accent-green);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-green) 0%, var(--accent-light) 100%);
+        }
+
+        .stats-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stats-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--border-radius-md);
+            background: linear-gradient(135deg, var(--accent-green) 0%, var(--accent-light) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .stats-value {
+            font-size: 1.75rem;
+            font-weight: 800;
+            font-family: 'Poppins', sans-serif;
+            color: var(--primary-green);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .stats-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .stats-trend {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            font-size: 0.75rem;
+            color: var(--accent-green);
+            font-weight: 600;
+        }
+
+        .stats-trend i {
+            font-size: 0.875rem;
+        }
+
+        /* Action Grid */
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .action-card {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-lg);
+            text-align: center;
+            text-decoration: none;
+            color: var(--text-primary);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, transparent 0%, rgba(76, 175, 80, 0.05) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .action-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .action-card:hover::before {
+            opacity: 1;
+        }
+
+        .action-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto var(--spacing-md);
+            border-radius: var(--border-radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .action-card:hover .action-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .action-card.blue .action-icon {
+            background: linear-gradient(135deg, #2196f3 0%, #64b5f6 100%);
+            color: white;
+        }
+
+        .action-card.green .action-icon {
+            background: linear-gradient(135deg, var(--accent-green) 0%, var(--accent-light) 100%);
+            color: white;
+        }
+
+        .action-card.teal .action-icon {
+            background: linear-gradient(135deg, #00bcd4 0%, #4dd0e1 100%);
+            color: white;
+        }
+
+        .action-card.orange .action-icon {
+            background: linear-gradient(135deg, #ff9800 0%, #ffb74d 100%);
+            color: white;
+        }
+
+        .action-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: var(--spacing-xs);
+            color: var(--text-primary);
+        }
+
+        .action-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Recent Activities */
+        .recent-activities {
+            margin-top: var(--spacing-xl);
+        }
+
+        .recent-activities-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .recent-activities-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary-green);
+        }
+
+        .activity-card {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
+            box-shadow: var(--shadow-sm);
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: var(--spacing-md);
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .activity-card:hover {
+            transform: translateX(4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .activity-card.light-green {
+            background: linear-gradient(135deg, #f1f8f4 0%, #e8f5e9 100%);
+        }
+
+        .activity-card.light-blue {
+            background: linear-gradient(135deg, #f0f7ff 0%, #e3f2fd 100%);
+        }
+
+        .activity-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--border-radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+
+        .activity-icon.green {
+            background: linear-gradient(135deg, var(--accent-green) 0%, var(--accent-light) 100%);
+        }
+
+        .activity-icon.blue {
+            background: linear-gradient(135deg, #2196f3 0%, #64b5f6 100%);
+        }
+
+        .activity-content {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xs);
+        }
+
+        .activity-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+
+        .activity-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .activity-time {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            text-align: right;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-around;
+            padding: var(--spacing-sm) 0;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            text-decoration: none;
+            color: var(--text-tertiary);
+            transition: all 0.3s ease;
+            padding: var(--spacing-sm);
+            border-radius: var(--border-radius-sm);
+            flex: 1;
+            max-width: 100px;
+        }
+
+        .nav-item i {
+            font-size: 1.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item span {
+            font-size: 0.625rem;
+            font-weight: 500;
+        }
+
+        .nav-item.active {
+            color: var(--accent-green);
+        }
+
+        .nav-item.active i {
+            transform: scale(1.1);
+        }
+
+        .nav-item:hover {
+            color: var(--accent-green);
+        }
+
+        /* PWA Install Button in Bottom Nav */
+        .nav-item.pwa-install-nav {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .nav-item.pwa-install-nav:hover {
+            color: var(--accent-green);
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .profile-card {
+                flex-direction: column;
+                text-align: center;
+                gap: var(--spacing-md);
+            }
+
+            .profile-avatar {
+                margin: 0 auto;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .action-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo-title {
+                font-size: 1rem;
+            }
+
+            .logo-subtitle {
+                font-size: 0.65rem;
+            }
+
+            .page-indicator {
+                font-size: 0.65rem;
+                padding: 3px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <i class="fas fa-leaf"></i>
+                </div>
+                <div class="logo-text">
+                    <div class="logo-title">
+                        VoxSilva
+                        <span class="page-indicator">
+                            <i class="fas fa-home"></i>
+                            Dashboard
+                        </span>
+                    </div>
+                    <div class="logo-subtitle">Platform AI untuk Lindungi Hutan dari Penebangan Liar</div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="action-btn notification-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge" id="notification-count">0</span>
+                </button>
+                <div class="profile-dropdown">
+                    <button class="profile-btn" id="profile-dropdown">
+                        <img src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y" 
+                             alt="Profile" 
+                             class="profile-img" 
+                             id="header-avatar">
+                        <i class="fas fa-caret-down"></i>
+                    </button>
+                    <div class="dropdown-menu" id="profile-menu">
+                        <div class="dropdown-header">
+                            <img src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y" 
+                                 alt="Profile" 
+                                 class="dropdown-avatar" 
+                                 id="dropdown-avatar">
+                            <div class="dropdown-user-info">
+                                <h4 id="dropdown-name">Memuat...</h4>
+                                <p id="dropdown-email">memuat@email.com</p>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a href="profile.html" class="dropdown-item">
+                            <i class="fas fa-user"></i> Profil Saya
+                        </a>
+                        <a href="settings.html" class="dropdown-item">
+                            <i class="fas fa-cog"></i> Pengaturan
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item text-danger" id="logout-btn-header">
+                            <i class="fas fa-sign-out-alt"></i> Keluar
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Profile Card -->
+        <div class="profile-card">
+            <img src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y" 
+                 alt="Profile" 
+                 class="profile-avatar" 
+                 id="user-avatar">
+            <div class="profile-info">
+                <h2 class="profile-name" id="user-name">Memuat...</h2>
+                <div class="profile-detail">
+                    <i class="fas fa-briefcase"></i>
+                    <span id="role-text">Memuat...</span>
+                </div>
+                <div class="profile-detail">
+                    <i class="fas fa-envelope"></i>
+                    <span id="email-text">memuat@email.com</span>
+                </div>
+                <div class="profile-detail">
+                    <i class="fas fa-tag"></i>
+                    <span>Base : <span id="base-number">0</span></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards Grid -->
+        <div class="stats-grid">
+            <div class="stats-card animate-fade-in" style="animation-delay: 0.1s;">
+                <div class="stats-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="stats-value" id="total-value">12</div>
+                <div class="stats-label">Human</div>
+            </div>
+            <div class="stats-card animate-fade-in" style="animation-delay: 0.2s;">
+                <div class="stats-icon">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <div class="stats-value" id="total-plants">248</div>
+                <div class="stats-label">Chainsaw</div>
+            </div>
+            <div class="stats-card animate-fade-in" style="animation-delay: 0.3s;">
+                <div class="stats-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stats-value" id="health-score-display">87</div>
+                <div class="stats-label">Jumlah Pergerakan</div>
+            </div>
+        </div>
+
+        <!-- Action Buttons Grid -->
+        <div class="action-grid">
+            <a href="chat.html" class="action-card green">
+                <div class="action-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="action-title">AI Assistant</div>
+                <div class="action-subtitle">Konsultan Green</div>
+            </a>
+            <a href="monitoring.html" class="action-card teal">
+                <div class="action-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="action-title">Monitoring</div>
+                <div class="action-subtitle">Real-time Sensor</div>
+            </a>
+            <a href="device.html" class="action-card blue">
+                <div class="action-icon">
+                    <i class="fas fa-microchip"></i>
+                </div>
+                <div class="action-title">Device</div>
+                <div class="action-subtitle">Kelola Perangkat</div>
+            </a>
+            <a href="profile.html" class="action-card orange">
+                <div class="action-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="action-title">Profil</div>
+                <div class="action-subtitle">Pengaturan</div>
+            </a>
+        </div>
+
+        <!-- Recent Activities -->
+        <div class="recent-activities">
+            <div class="recent-activities-header">
+                <h3 class="recent-activities-title">Aktivitas Terbaru</h3>
+            </div>
+            
+            <!-- Activity Card 1 -->
+            <div class="activity-card light-green animate-fade-in" style="animation-delay: 0.5s;">
+                <div class="activity-icon green">
+                    <i class="fas fa-seedling"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">Device 5 Ditambahkan</div>
+                    <div class="activity-subtitle">Status: Aktif</div>
+                </div>
+                <div class="activity-time">2 jam lalu</div>
+            </div>
+
+            <!-- Activity Card 2 -->
+            <div class="activity-card light-blue animate-fade-in" style="animation-delay: 0.6s;">
+                <div class="activity-icon blue">
+                    <i class="fas fa-thermometer-half"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">Data Sensor Diperbarui</div>
+                    <div class="activity-subtitle">Human , Chainsaw </div>
+                </div>
+                <div class="activity-time">1 hari lalu</div>
+            </div>
+
+            <!-- Activity Card 3 -->
+            <div class="activity-card light-green animate-fade-in" style="animation-delay: 0.7s;">
+                <div class="activity-icon green">
+                    <i class="fas fa-water"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">Bahaya</div>
+                    <div class="activity-subtitle">Device 1 dan 2</div>
+                </div>
+                <div class="activity-time">3 hari lalu</div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-item active">
+            <i class="fas fa-home"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="chat.html" class="nav-item">
+            <i class="fas fa-robot"></i>
+            <span>AI Assistant</span>
+        </a>
+        <a href="device.html" class="nav-item">
+            <i class="fas fa-microchip"></i>
+            <span>Device</span>
+        </a>
+        <a href="monitoring.html" class="nav-item">
+            <i class="fas fa-chart-line"></i>
+            <span>Monitoring</span>
+        </a>
+        <button id="pwa-install-nav-btn" class="nav-item pwa-install-nav" style="display: none;">
+            <i class="fas fa-download"></i>
+            <span>Install</span>
+        </button>
+        <a href="profile.html" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    
+    <script>
+        // Simple MD5 function for Gravatar (fallback)
+        function md5(input) {
+            // Simple hash for demo - in production use a proper MD5 library
+            if (!input) return '00000000000000000000000000000000';
+            let hash = 0;
+            for (let i = 0; i < input.length; i++) {
+                const char = input.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            return Math.abs(hash).toString(16).padStart(32, '0');
+        }
+
+        // Wait for Firebase to be ready
+        document.addEventListener('DOMContentLoaded', () => {
+            // Wait for firebaseApp to be available
+            function initializeDashboard() {
+                if (!window.firebaseApp) {
+                    console.log('Waiting for Firebase...');
+                    setTimeout(initializeDashboard, 100);
+                    return;
+                }
+
+                console.log('Firebase ready, initializing dashboard...');
+
+                // Update user profile information
+                window.firebaseApp.onAuthStateChanged(async (user) => {
+                    if (user) {
+                        console.log('User authenticated:', user.email);
+                        
+                        // Update profile card
+                        updateProfileCard(user);
+                        
+                        // Update dropdown
+                        updateDropdown(user);
+                        
+                        // Get additional user data from database
+                        await fetchUserData(user.uid);
+                        
+                    } else {
+                        // User is signed out, redirect to login
+                        console.log('User not authenticated, redirecting to login');
+                        window.location.href = 'login.html';
+                    }
+                });
+
+                // Setup logout buttons
+                setupLogoutButtons();
+                
+                // Animate counters
+                animateCounters();
+            }
+
+            // Function to update profile card
+            function updateProfileCard(user) {
+                const avatar = document.getElementById('user-avatar');
+                const nameElement = document.getElementById('user-name');
+                const emailElement = document.getElementById('email-text');
+                
+                // Update avatar - gunakan photoURL dari Google atau default dari email
+                if (user.photoURL) {
+                    // Jika user login dengan Google, gunakan photoURL
+                    avatar.src = user.photoURL;
+                } else if (user.email) {
+                    // Jika user login dengan email/password, gunakan Gravatar
+                    const emailHash = md5(user.email.trim().toLowerCase());
+                    avatar.src = `https://www.gravatar.com/avatar/${emailHash}?d=mp&s=200`;
+                } else {
+                    // Default avatar jika tidak ada email
+                    avatar.src = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&s=200';
+                }
+                
+                // Update name - gunakan displayName dari Google atau nama dari email
+                const displayName = user.displayName || 
+                                   (user.email ? user.email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Pengguna');
+                nameElement.textContent = displayName;
+                
+                // Update email
+                emailElement.textContent = user.email || 'Email tidak tersedia';
+                
+                // Update header avatar
+                const headerAvatar = document.getElementById('header-avatar');
+                if (headerAvatar) {
+                    headerAvatar.src = avatar.src;
+                }
+                
+                // Update dropdown avatar juga
+                const dropdownAvatar = document.getElementById('dropdown-avatar');
+                if (dropdownAvatar) {
+                    dropdownAvatar.src = avatar.src;
+                }
+            }
+
+            // Function to update dropdown
+            function updateDropdown(user) {
+                const dropdownAvatar = document.getElementById('dropdown-avatar');
+                const dropdownName = document.getElementById('dropdown-name');
+                const dropdownEmail = document.getElementById('dropdown-email');
+                
+                // Update avatar - sama seperti profile card
+                if (dropdownAvatar) {
+                    if (user.photoURL) {
+                        dropdownAvatar.src = user.photoURL;
+                    } else if (user.email) {
+                        const emailHash = md5(user.email.trim().toLowerCase());
+                        dropdownAvatar.src = `https://www.gravatar.com/avatar/${emailHash}?d=mp&s=200`;
+                    } else {
+                        dropdownAvatar.src = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&s=200';
+                    }
+                }
+                
+                // Update name - format yang sama dengan profile card
+                if (dropdownName) {
+                    const displayName = user.displayName || 
+                                       (user.email ? user.email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Pengguna');
+                    dropdownName.textContent = displayName;
+                }
+                
+                // Update email
+                if (dropdownEmail) {
+                    dropdownEmail.textContent = user.email || 'Email tidak tersedia';
+                }
+            }
+
+            // Function to fetch additional user data from Firestore
+            async function fetchUserData(userId) {
+                try {
+                    // Gunakan Firestore melalui firebaseDB.getUserData()
+                    if (window.firebaseApp && window.firebaseApp.firebaseDB) {
+                        const userData = await window.firebaseApp.firebaseDB.getUserData(userId);
+                        
+                        if (userData) {
+                            console.log('User data from Firestore:', userData);
+                            
+                            // Update role
+                            const roleElement = document.getElementById('role-text');
+                            if (roleElement) {
+                                roleElement.textContent = userData.role || userData.jobTitle || 'Pengguna';
+                            }
+                            
+                            // Update base number
+                            const baseElement = document.getElementById('base-number');
+                            if (baseElement) {
+                                baseElement.textContent = userData.base || userData.baseNumber || '0';
+                            }
+                            
+                            console.log(`User role: ${userData.role || 'Pengguna'}, Base: ${userData.base || '0'}`);
+                        } else {
+                            console.log('No additional user data found in Firestore');
+                            // Set default values
+                            const roleElement = document.getElementById('role-text');
+                            if (roleElement) {
+                                roleElement.textContent = 'Pengguna';
+                            }
+                            const baseElement = document.getElementById('base-number');
+                            if (baseElement) {
+                                baseElement.textContent = '0';
+                            }
+                        }
+                    } else {
+                        console.warn('Firebase DB not available');
+                        // Set default values
+                        const roleElement = document.getElementById('role-text');
+                        if (roleElement) {
+                            roleElement.textContent = 'Pengguna';
+                        }
+                        const baseElement = document.getElementById('base-number');
+                        if (baseElement) {
+                            baseElement.textContent = '0';
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error fetching user data from Firestore:', error);
+                    // Set default values on error
+                    const roleElement = document.getElementById('role-text');
+                    if (roleElement) {
+                        roleElement.textContent = 'Pengguna';
+                    }
+                    const baseElement = document.getElementById('base-number');
+                    if (baseElement) {
+                        baseElement.textContent = '0';
+                    }
+                }
+            }
+
+            // Function to setup logout buttons
+            function setupLogoutButtons() {
+                // Header logout button
+                const logoutBtnHeader = document.getElementById('logout-btn-header');
+                if (logoutBtnHeader) {
+                    logoutBtnHeader.addEventListener('click', async (e) => {
+                        e.preventDefault();
+                        try {
+                            await window.firebaseApp.logout();
+                            window.location.href = 'login.html';
+                        } catch (error) {
+                            console.error('Logout error:', error);
+                            alert('Gagal keluar. Silakan coba lagi.');
+                        }
+                    });
+                }
+                
+                // Profile card logout button (if exists)
+                const logoutBtn = document.getElementById('logout-btn');
+                if (logoutBtn) {
+                    logoutBtn.addEventListener('click', async (e) => {
+                        e.preventDefault();
+                        try {
+                            await window.firebaseApp.logout();
+                            window.location.href = 'login.html';
+                        } catch (error) {
+                            console.error('Logout error:', error);
+                            alert('Gagal keluar. Silakan coba lagi.');
+                        }
+                    });
+                }
+            }
+
+            // Function to animate counters
+            function animateCounters() {
+                const counters = document.querySelectorAll('.stats-value');
+                counters.forEach(counter => {
+                    const target = parseInt(counter.textContent.replace(/[^\d]/g, ''));
+                    const prefix = counter.textContent.replace(/[\d,]/g, '');
+                    const suffix = counter.textContent.match(/[^\d,]+$/)?.[0] || '';
+                    
+                    let current = 0;
+                    const increment = Math.ceil(target / 100);
+                    const duration = 2000;
+                    const stepTime = Math.floor(duration / (target / increment));
+                    
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= target) {
+                            counter.textContent = prefix + target.toLocaleString() + suffix;
+                            clearInterval(timer);
+                        } else {
+                            counter.textContent = prefix + current.toLocaleString() + suffix;
+                        }
+                    }, stepTime);
+                });
+            }
+
+            // Start initialization
+            initializeDashboard();
+        });
+    </script>
+    
+    <!-- PWA Install Script -->
+    <script src="/js/pwa-install.js"></script>
+</body>
+</html>
