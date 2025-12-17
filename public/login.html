@@ -3,6 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#31694E">
+    <meta name="description" content="VoxSilva - Smart Forest Monitoring System">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="VoxSilva">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icon-192x192.png">
     <title>VoxSilva - Login</title>
     
     <!-- Firebase SDK Versi 9+ (Modular) -->
@@ -437,6 +444,7 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="/assets/css/responsive.css">
 </head>
 <body>
     <div class="login-container">
@@ -504,7 +512,7 @@
             <!-- Signup Link -->
             <div class="signup-link">
                 <span>Belum punya akun?</span>
-                <a href="daftar.html" id="signup-link">Daftar di sini</a>
+                <a href="/daftar.html" id="signup-link">Daftar di sini</a>
             </div>
         </div>
     </div>
@@ -621,7 +629,7 @@
                     
                     // Redirect after 1 second
                     setTimeout(() => {
-                        window.location.href = 'dashboard.html';
+                        window.location.href = '/dashboard.html';
                     }, 1000);
                     
                 } catch (error) {
@@ -636,7 +644,7 @@
                 const user = window.firebaseAuth.currentUser;
                 if (user && !window.location.pathname.endsWith('login.html')) {
                     // Redirect to dashboard if not on login page
-                    window.location.href = 'dashboard.html';
+                    window.location.href = '/dashboard.html';
                 }
                 return user;
             };
@@ -650,7 +658,7 @@
                 
                 if (user) {
                     if (isLoginPage || isRegisterPage) {
-                        window.location.href = 'dashboard.html';
+                        window.location.href = '/dashboard.html';
                     }
                 }
             });
@@ -760,21 +768,17 @@
                 window.firebaseOnAuthStateChanged(window.firebaseAuth, (user) => {
                     if (user && window.location.pathname.includes('login.html')) {
                         // User is already logged in, redirect to dashboard
-                        window.location.href = 'dashboard.html';
+                        window.location.href = '/dashboard.html';
                     }
                 });
             }
 
-            // Demo account for testing (remove in production)
-            window.addEventListener('load', () => {
-                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                    // Pre-fill demo credentials for testing
-                    emailInput.value = "demo@aiplanner.com";
-                    passwordInput.value = "demo123";
-                }
-            });
+            // Catatan: jangan hardcode environment dev/prod atau hostname tertentu di production.
         });
 
     </script>
+    
+    <!-- PWA Service Worker Registration -->
+    <script src="/js/service-worker-register.js"></script>
 </body>
 </html>

@@ -1,0 +1,148 @@
+/* VoxSilva - Mobile-first responsive overrides
+   RULES:
+   - CSS-only overrides (no JS changes)
+   - Safe, additive, and scoped where possible
+*/
+
+:root {
+  --vs-safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Prevent accidental horizontal scroll */
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+img,
+video,
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
+canvas {
+  max-width: 100%;
+}
+
+pre,
+code {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Form controls: full-width + no iOS zoom (16px) */
+input,
+select,
+textarea,
+button {
+  font: inherit;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  max-width: 100%;
+  font-size: 16px;
+}
+
+/* Touch targets (minimum 44px) */
+button,
+.btn,
+.login-button,
+.google-button,
+.filter-btn,
+.action-btn,
+.map-control-btn,
+.btn-logout {
+  min-height: 44px;
+}
+
+/* Pages that include bottom nav should reserve space */
+.has-bottom-nav {
+  padding-bottom: calc(88px + var(--vs-safe-bottom));
+}
+
+.bottom-nav {
+  padding-bottom: calc(8px + var(--vs-safe-bottom));
+}
+
+@media (max-width: 768px) {
+  /* Header / top bars: allow wrapping */
+  .header-content {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .header-actions {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .dropdown-menu {
+    max-width: calc(100vw - 24px);
+  }
+
+  /* Bottom nav: readable text + easy tap */
+  .bottom-nav .nav-item {
+    min-height: 44px;
+    padding: 8px 10px;
+  }
+
+  .bottom-nav .nav-item span {
+    font-size: 0.875rem; /* 14px (base 16px) */
+  }
+
+  /* Device page: remove desktop min-width that causes overflow on small phones */
+  .controls-section {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  .map-section {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  .map-controls {
+    top: 12px !important;
+    right: 12px !important;
+  }
+
+  .map-overlay {
+    top: 12px !important;
+    left: 12px !important;
+    max-width: calc(100vw - 24px) !important;
+  }
+
+  .notification {
+    left: 12px !important;
+    right: 12px !important;
+    width: auto !important;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Slightly denser bottom nav */
+  .bottom-nav .nav-item i {
+    font-size: 1.35rem;
+  }
+
+  /* Profile page: avoid cramped inner padding */
+  .container {
+    padding: 12px !important;
+  }
+
+  .profile-card {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+

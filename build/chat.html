@@ -3,6 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#31694E">
+    <meta name="description" content="VoxSilva - Smart Forest Monitoring System">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="VoxSilva">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icon-192x192.png">
     <title>AI Assistant - VoxSilva</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -634,8 +641,9 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="/assets/css/responsive.css">
 </head>
-<body>
+<body class="has-bottom-nav">
     <div id="app-container">
         <!-- Header -->
         <header class="header">
@@ -990,5 +998,8 @@
     
     <!-- W3.CSS Library for including HTML components -->
     <script src="https://www.w3schools.com/lib/w3.js"></script>
+    
+    <!-- PWA Service Worker Registration -->
+    <script src="/js/service-worker-register.js"></script>
 </body>
 </html>

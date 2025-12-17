@@ -362,11 +362,11 @@
 
         if (user) {
             if (isLoginPage || isRegisterPage) {
-                window.location.href = 'dashboard.html';
+                window.location.href = '/dashboard.html';
             }
         } else {
             if (!isLoginPage && !isIndexPage && !isRegisterPage) {
-                window.location.href = 'login.html';
+                window.location.href = '/login.html';
             }
         }
     });

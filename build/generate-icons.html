@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate PWA Icons - VoxSilva</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #31694E;
+            margin-bottom: 20px;
+        }
+        .instructions {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #31694E;
+        }
+        .instructions ol {
+            margin-left: 20px;
+        }
+        .instructions li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        .icon-preview {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .icon-box {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .icon-box img {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #28a745;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Generate PWA Icons untuk VoxSilva</h1>
+        
+        <div class="instructions">
+            <h2>📋 Cara Membuat Ikon PWA</h2>
+            <p>Untuk membuat aplikasi PWA yang dapat diinstall, Anda perlu membuat ikon dengan ukuran berikut:</p>
+            <ol>
+                <li><strong>icon-192x192.png</strong> - Ukuran 192x192 pixels (untuk Android)</li>
+                <li><strong>icon-512x512.png</strong> - Ukuran 512x512 pixels (untuk Android & Splash Screen)</li>
+            </ol>
+        </div>
+
+        <div class="warning">
+            <strong>⚠️ Penting:</strong> File ikon harus ditempatkan di folder <code>public/</code> agar dapat diakses oleh PWA.
+        </div>
+
+        <div class="instructions">
+            <h3>🔧 Metode 1: Menggunakan Online Tool (Paling Mudah)</h3>
+            <ol>
+                <li>Buka <a href="https://realfavicongenerator.net/" target="_blank">RealFaviconGenerator</a> atau <a href="https://www.pwabuilder.com/imageGenerator" target="_blank">PWA Builder Image Generator</a></li>
+                <li>Upload logo VoxSilva Anda (logo.png dari folder src/components/Header/)</li>
+                <li>Pilih ukuran 192x192 dan 512x512</li>
+                <li>Download ikon yang dihasilkan</li>
+                <li>Rename file menjadi <code>icon-192x192.png</code> dan <code>icon-512x512.png</code></li>
+                <li>Simpan kedua file di folder <code>public/</code></li>
+            </ol>
+        </div>
+
+        <div class="instructions">
+            <h3>🔧 Metode 2: Menggunakan Image Editor (Photoshop/GIMP)</h3>
+            <ol>
+                <li>Buka logo VoxSilva di editor gambar</li>
+                <li>Resize ke 192x192 pixels, simpan sebagai <code>icon-192x192.png</code></li>
+                <li>Resize ke 512x512 pixels, simpan sebagai <code>icon-512x512.png</code></li>
+                <li>Pastikan format PNG dengan transparansi (jika diperlukan)</li>
+                <li>Simpan kedua file di folder <code>public/</code></li>
+            </ol>
+        </div>
+
+        <div class="instructions">
+            <h3>🔧 Metode 3: Menggunakan Command Line (ImageMagick)</h3>
+            <p>Jika Anda memiliki ImageMagick terinstall:</p>
+            <div class="code-block">
+# Convert logo ke icon 192x192
+convert src/components/Header/logo.png -resize 192x192 public/icon-192x192.png
+
+# Convert logo ke icon 512x512
+convert src/components/Header/logo.png -resize 512x512 public/icon-512x512.png
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h3>🔧 Metode 4: Menggunakan Node.js Script</h3>
+            <p>Install sharp terlebih dahulu:</p>
+            <div class="code-block">
+npm install sharp --save-dev
+            </div>
+            <p>Kemudian buat file <code>scripts/generate-icons.js</code>:</p>
+            <div class="code-block">
+const sharp = require('sharp');
+const fs = require('fs');
+const path = require('path');
+
+const logoPath = path.join(__dirname, '../src/components/Header/logo.png');
+const publicPath = path.join(__dirname, '../public');
+
+// Generate 192x192 icon
+sharp(logoPath)
+  .resize(192, 192)
+  .toFile(path.join(publicPath, 'icon-192x192.png'))
+  .then(() => console.log('✓ icon-192x192.png created'));
+
+// Generate 512x512 icon
+sharp(logoPath)
+  .resize(512, 512)
+  .toFile(path.join(publicPath, 'icon-512x512.png'))
+  .then(() => console.log('✓ icon-512x512.png created'));
+            </div>
+            <p>Jalankan dengan:</p>
+            <div class="code-block">
+node scripts/generate-icons.js
+            </div>
+        </div>
+
+        <div class="success">
+            <strong>✅ Setelah Ikon Dibuat:</strong>
+            <ol>
+                <li>Pastikan file <code>icon-192x192.png</code> dan <code>icon-512x512.png</code> ada di folder <code>public/</code></li>
+                <li>Rebuild aplikasi: <code>npm run build</code></li>
+                <li>Deploy ke Firebase: <code>npm run deploy</code></li>
+                <li>Test PWA dengan membuka aplikasi di browser dan cek apakah tombol "Install" muncul</li>
+            </ol>
+        </div>
+
+        <div class="instructions">
+            <h3>📱 Testing PWA</h3>
+            <ol>
+                <li>Buka aplikasi di Chrome/Edge (desktop atau mobile)</li>
+                <li>Buka DevTools (F12) → tab "Application" → "Manifest"</li>
+                <li>Pastikan semua ikon terdeteksi tanpa error</li>
+                <li>Cek "Service Workers" untuk memastikan service worker terdaftar</li>
+                <li>Uji mode offline dengan DevTools → Network → Offline</li>
+            </ol>
+        </div>
+
+        <div class="icon-preview">
+            <div class="icon-box">
+                <h4>192x192</h4>
+                <div style="width: 192px; height: 192px; background: #31694E; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px;">
+                    Icon 192
+                </div>
+                <p><small>icon-192x192.png</small></p>
+            </div>
+            <div class="icon-box">
+                <h4>512x512</h4>
+                <div style="width: 256px; height: 256px; background: #31694E; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 48px;">
+                    Icon 512
+                </div>
+                <p><small>icon-512x512.png</small></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

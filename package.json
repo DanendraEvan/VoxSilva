@@ -19,7 +19,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build && npm run copy-pwa",
-    "copy-pwa": "copy public\\service-worker.js build\\service-worker.js 2>nul & copy public\\js\\pwa-install.js build\\js\\pwa-install.js 2>nul || echo PWA files copied",
+    "copy-pwa": "copy public\\service-worker.js build\\service-worker.js 2>nul & copy public\\js\\pwa-install.js build\\js\\pwa-install.js 2>nul & copy public\\js\\service-worker-register.js build\\js\\service-worker-register.js 2>nul & copy public\\manifest.json build\\manifest.json 2>nul || echo PWA files copied",
+    "generate-icons": "node scripts/generate-icons.js",
     "clean": "if exist build rmdir /s /q build",
     "rebuild": "npm run clean && npm run build",
     "predeploy": "npm run rebuild",

@@ -48,20 +48,17 @@ class PWAInstaller {
 
         // Register service worker
         this.registerServiceWorker().then(() => {
-            // After service worker is registered, check if we should show button
-            // Even if beforeinstallprompt hasn't fired yet
+            // After service worker is registered, show button if not installed
+            // The button will handle install prompt when clicked
             setTimeout(() => {
-                if (!this.isInstalled && this.deferredPrompt) {
-                    this.showInstallButton();
-                } else if (!this.isInstalled) {
-                    // Try to show button anyway - browser might show install option
+                if (!this.isInstalled) {
                     const button = this.getInstallButton();
                     if (button && button.id === 'pwa-install-nav-btn') {
                         button.style.display = 'flex';
-                        console.log('[PWA] Install button shown (fallback - service worker ready)');
+                        console.log('[PWA] Install button shown (service worker ready)');
                     }
                 }
-            }, 2000);
+            }, 1000);
         });
     }
 

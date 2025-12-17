@@ -1,92 +1,105 @@
-// Service Worker untuk PWA - Offline Support
-const CACHE_NAME = 'voxsilva-v2';
-const urlsToCache = [
-  '/',
+// Service Worker untuk PWA - Offline Support (Cache-first navigation)
+const PRECACHE_NAME = 'voxsilva-precache-v4';
+const RUNTIME_CACHE = 'voxsilva-runtime-v4';
+
+// Wajib dicache (sesuai requirement)
+const PRECACHE_URLS = [
   '/index.html',
   '/dashboard.html',
-  '/device.html',
-  '/monitoring.html',
-  '/profile.html',
   '/login.html',
-  '/daftar.html',
   '/chat.html',
+  '/monitoring.html',
+  '/device.html',
   '/manifest.json',
-  '/js/firebase-config.js',
-  '/js/pwa-install.js',
-  '/assets/css/bottom-nav.css'
+  '/icon-192x192.png',
+  '/icon-512x512.png'
 ];
 
-// Install event - cache resources
+const NAVIGATION_FALLBACK_URL = '/index.html';
+
 self.addEventListener('install', (event) => {
-  console.log('Service Worker: Installing...');
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('Service Worker: Caching files');
-        return cache.addAll(urlsToCache);
-      })
-      .catch((error) => {
-        console.error('Service Worker: Cache failed', error);
-      })
-  );
-  self.skipWaiting();
+  event.waitUntil((async () => {
+    const cache = await caches.open(PRECACHE_NAME);
+    await Promise.allSettled(
+      PRECACHE_URLS.map((url) =>
+        cache.add(new Request(url, { cache: 'reload' }))
+      )
+    );
+    await self.skipWaiting();
+  })());
 });
 
-// Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  console.log('Service Worker: Activating...');
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('Service Worker: Deleting old cache', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-  );
-  return self.clients.claim();
+  event.waitUntil((async () => {
+    const cacheNames = await caches.keys();
+    await Promise.all(
+      cacheNames.map((name) => {
+        if (name !== PRECACHE_NAME && name !== RUNTIME_CACHE) {
+          return caches.delete(name);
+        }
+        return undefined;
+      })
+    );
+    await self.clients.claim();
+  })());
 });
 
-// Fetch event - serve from cache, fallback to network
+async function putInRuntimeCache(request, response) {
+  if (!response || !response.ok) return;
+  const cache = await caches.open(RUNTIME_CACHE);
+  await cache.put(request, response);
+}
+
+async function cacheFirstNavigation(request) {
+  // Cache-first untuk navigasi halaman (document)
+  const cached = await caches.match(request, { ignoreSearch: true });
+  if (cached) return cached;
+
+  try {
+    const response = await fetch(request);
+    // Simpan copy ke runtime cache agar next time cache-first berhasil
+    await putInRuntimeCache(request, response.clone());
+    return response;
+  } catch (_err) {
+    // Offline + tidak ada di cache => fallback ke /index.html
+    return (await caches.match(NAVIGATION_FALLBACK_URL, { ignoreSearch: true })) ||
+      new Response('Offline', { status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+  }
+}
+
+async function cacheFirstAsset(request) {
+  const cached = await caches.match(request, { ignoreSearch: true });
+  if (cached) return cached;
+
+  const response = await fetch(request);
+  // Hanya cache same-origin (hindari caching cross-origin)
+  const url = new URL(request.url);
+  if (url.origin === self.location.origin) {
+    await putInRuntimeCache(request, response.clone());
+  }
+  return response;
+}
+
 self.addEventListener('fetch', (event) => {
+  const { request } = event;
+  if (request.method !== 'GET') return;
+
+  const url = new URL(request.url);
+  if (url.protocol === 'chrome-extension:') return;
+
+  // Cache-first untuk navigasi halaman
+  if (request.mode === 'navigate' || request.destination === 'document') {
+    event.respondWith(cacheFirstNavigation(request));
+    return;
+  }
+
+  // Cache-first untuk assets (css/js/png/manifest/ikon, dll)
   event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Return cached version or fetch from network
-        return response || fetch(event.request).then((response) => {
-          // Don't cache if not a GET request
-          if (event.request.method !== 'GET') {
-            return response;
-          }
-          
-          // Clone the response
-          const responseToCache = response.clone();
-          
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
-          });
-          
-          return response;
-        });
-      })
-      .catch(() => {
-        // If both cache and network fail, return offline fallback
-        if (event.request.destination === 'document') {
-          // Try to return cached dashboard or index
-          return caches.match('/dashboard.html') || caches.match('/index.html');
-        }
-        // For other resources, return a basic offline response
-        return new Response('Offline - Content not available', {
-          status: 503,
-          statusText: 'Service Unavailable',
-          headers: new Headers({
-            'Content-Type': 'text/plain'
-          })
-        });
-      })
+    cacheFirstAsset(request).catch(async () => {
+      // Jika offline dan asset tidak ada di cache, jangan bikin navigasi gagal
+      const cached = await caches.match(request, { ignoreSearch: true });
+      return cached || new Response('Offline', { status: 503 });
+    })
   );
 });
 
