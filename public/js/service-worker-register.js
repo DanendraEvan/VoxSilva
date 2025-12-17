@@ -24,10 +24,10 @@
 
             console.log('[PWA] Service Worker registered successfully:', registration.scope);
 
-            // Check for updates periodically
+            // Check for updates more frequently
             setInterval(() => {
                 registration.update();
-            }, 60000); // Check every minute
+            }, 30000); // Check every 30 seconds
 
             // Listen for updates
             registration.addEventListener('updatefound', () => {
@@ -35,11 +35,20 @@
                 
                 newWorker.addEventListener('statechange', () => {
                     if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                        // New service worker available
-                        console.log('[PWA] New service worker available');
-                        showUpdateNotification();
+                        // New service worker available - auto reload
+                        console.log('[PWA] New service worker available - auto reloading');
+                        // Auto reload setelah 1 detik (tanpa confirm)
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
                     } else if (newWorker.state === 'activated') {
                         console.log('[PWA] Service Worker activated');
+                        // Auto reload ketika service worker baru diaktifkan
+                        if (navigator.serviceWorker.controller) {
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 500);
+                        }
                     }
                 });
             });
@@ -55,12 +64,16 @@
         }
     }
 
-    function showUpdateNotification() {
-        // Show a notification that update is available
-        if (confirm('Update tersedia untuk VoxSilva! Muat ulang halaman sekarang?')) {
-            window.location.reload();
+    // Check for updates on page visibility change (when user switches tabs back)
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden && 'serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistration().then(registration => {
+                if (registration) {
+                    registration.update();
+                }
+            });
         }
-    }
+    });
 
     // Expose registration function globally if needed
     window.registerServiceWorker = registerServiceWorker;

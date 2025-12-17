@@ -183,6 +183,9 @@
         .stat-card.suspicious { border-left-color: var(--warning-color); }
         .stat-card.suspicious::before { background: var(--gradient-warning); }
         
+        .stat-card.movement { border-left-color: #8b5cf6; }
+        .stat-card.movement::before { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
+        
         .stat-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
@@ -211,6 +214,7 @@
         .stat-icon.non-human { background: var(--gradient-success); }
         .stat-icon.chainsaw { background: var(--gradient-danger); }
         .stat-icon.suspicious { background: var(--gradient-warning); }
+        .stat-icon.movement { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
         
         .stat-value {
             font-size: 2.5rem;
@@ -246,6 +250,11 @@
         .trend-down {
             color: #ef4444;
             background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .trend-neutral {
+            color: #6b7280;
+            background: rgba(107, 114, 128, 0.1);
         }
         
         /* Charts Container */
@@ -783,6 +792,20 @@
                 <div class="stat-value" id="suspicious-count">0</div>
                 <div class="stat-label">Aktivitas Mencurigakan</div>
             </div>
+
+            <div class="stat-card movement">
+                <div class="stat-card-header">
+                    <div class="stat-icon movement">
+                        <i class="fas fa-arrows-alt"></i>
+                    </div>
+                    <span class="stat-trend trend-neutral">
+                        <i class="fas fa-minus"></i>
+                        Status
+                    </span>
+                </div>
+                <div class="stat-value" id="movement-count">0</div>
+                <div class="stat-label">Perpindahan Terdeteksi</div>
+            </div>
         </div>
 
         <!-- Charts -->
@@ -793,10 +816,6 @@
                     <div class="chart-title">
                         <i class="fas fa-users"></i>
                         Aktivitas Manusia vs Non-Manusia
-                    </div>
-                    <div class="chart-actions">
-                        <button class="action-btn active" data-chart="human" data-type="bar">Bar</button>
-                        <button class="action-btn" data-chart="human" data-type="line">Line</button>
                     </div>
                 </div>
                 <div class="chart-wrapper">
@@ -811,10 +830,6 @@
                         <i class="fas fa-tree"></i>
                         Aktivitas Chainsaw
                     </div>
-                    <div class="chart-actions">
-                        <button class="action-btn active" data-chart="chainsaw" data-type="line">Line</button>
-                        <button class="action-btn" data-chart="chainsaw" data-type="bar">Bar</button>
-                    </div>
                 </div>
                 <div class="chart-wrapper">
                     <canvas id="chainsaw-chart"></canvas>
@@ -828,13 +843,22 @@
                         <i class="fas fa-shield-alt"></i>
                         Aktivitas Mencurigakan
                     </div>
-                    <div class="chart-actions">
-                        <button class="action-btn active" data-chart="suspicious" data-type="bar">Bar</button>
-                        <button class="action-btn" data-chart="suspicious" data-type="line">Line</button>
-                    </div>
                 </div>
                 <div class="chart-wrapper">
                     <canvas id="suspicious-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- Movement Detection Chart -->
+            <div class="chart-card fade-in">
+                <div class="chart-header">
+                    <div class="chart-title">
+                        <i class="fas fa-arrows-alt"></i>
+                        Deteksi Perpindahan Device
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="movement-chart"></canvas>
                 </div>
             </div>
         </div>
@@ -986,25 +1010,65 @@
             
             console.log('👂 Setting up real-time listeners...');
             
-            // Listen for new monitoring data
-            database.ref('monitoring')
-                .orderByChild('timestamp')
-                .limitToLast(1)
-                .on('child_added', (snapshot) => {
-                    const newData = snapshot.val();
-                    console.log('📊 New monitoring data received:', newData);
-                    
-                    // Update the UI with new data
-                    getMonitoringDataFromFirebase(currentFilter).then(data => {
-                        sessionStorage.setItem('monitoringData', JSON.stringify(data));
-                        updateCharts();
-                        updateStats();
-                        updateActivityLogs();
-                    }).catch(error => {
-                        console.error('Error refreshing data:', error);
+            // Function to refresh data
+            const refreshData = () => {
+                getMonitoringDataFromFirebase(currentFilter).then(data => {
+                    sessionStorage.setItem('monitoringData', JSON.stringify(data));
+                    updateCharts();
+                    updateStats();
+                    updateActivityLogs();
+                }).catch(error => {
+                    console.error('Error refreshing data:', error);
+                });
+            };
+            
+            // Listen for new monitoring data from multiple possible paths
+            const pathsToListen = ['monitoring', 'monitoring_data', 'data/monitoring'];
+            
+            pathsToListen.forEach(path => {
+                // Listen for new data additions
+                database.ref(path)
+                    .orderByChild('timestamp')
+                    .limitToLast(1)
+                    .on('child_added', (snapshot) => {
+                        const newData = snapshot.val();
+                        console.log(`📊 New monitoring data received from ${path}:`, newData);
+                        
+                        // Check if data contains accelerometer data (x, y, z)
+                        if (newData && (newData.x !== undefined || newData.y !== undefined || newData.z !== undefined)) {
+                            console.log('📱 Accelerometer data detected:', { x: newData.x, y: newData.y, z: newData.z });
+                        }
+                        
+                        // Update the UI with new data
+                        refreshData();
+                    }, (error) => {
+                        console.log(`⚠️ Could not listen to ${path}/child_added:`, error.message);
                     });
+                
+                // Listen for changes in monitoring data
+                database.ref(path)
+                    .orderByChild('timestamp')
+                    .limitToLast(10)
+                    .on('value', (snapshot) => {
+                        if (snapshot.val()) {
+                            console.log(`🔄 Monitoring data updated from ${path}`);
+                            refreshData();
+                        }
+                    }, (error) => {
+                        console.log(`⚠️ Could not listen to ${path}/value:`, error.message);
+                    });
+            });
+            
+            // Also listen to device-based paths
+            database.ref('devices')
+                .on('child_changed', (snapshot) => {
+                    const deviceData = snapshot.val();
+                    if (deviceData && (deviceData.monitoring || deviceData.latest || deviceData.detections)) {
+                        console.log('🔄 Device monitoring data updated:', snapshot.key);
+                        refreshData();
+                    }
                 }, (error) => {
-                    console.error('Error in monitoring listener:', error);
+                    console.log('⚠️ Could not listen to devices/child_changed:', error.message);
                 });
                 
             // Listen for new log entries
@@ -1013,58 +1077,43 @@
                 .on('child_added', (snapshot) => {
                     console.log('📝 New log entry received');
                     // Refresh activity logs
-                    getMonitoringDataFromFirebase(currentFilter).then(() => {
-                        updateActivityLogs();
-                    }).catch(error => {
-                        console.error('Error refreshing logs:', error);
-                        // Still try to update logs from sessionStorage
-                        updateActivityLogs();
-                    });
+                    refreshData();
                 }, (error) => {
-                    console.error('Error in logs listener:', error);
+                    console.log('⚠️ Could not listen to monitoring_logs:', error.message);
                 });
             
             console.log('✅ Real-time listeners set up successfully');
         }
 
-        // Generate mock data
+        // Generate mock data (returns array format like getMonitoringDataFromFirebase)
         function generateMockData(days) {
-            const data = {
-                labels: [],
-                human: [],
-                nonHuman: [],
-                chainsaw: [],
-                suspicious: [],
-                logs: []
-            };
+            const data = [];
+            const now = new Date();
 
             // Generate dates for last N days
             for (let i = days - 1; i >= 0; i--) {
-                const date = new Date();
-                date.setDate(date.getDate() - i);
-                const dateStr = date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
-                data.labels.push(dateStr);
+                const date = new Date(now);
+                date.setDate(now.getDate() - i);
+                const dateString = date.toISOString().split('T')[0];
                 
-                // Random data with realistic patterns
-                data.human.push(Math.floor(Math.random() * 40) + 15);
-                data.nonHuman.push(Math.floor(Math.random() * 25) + 8);
-                data.chainsaw.push(Math.floor(Math.random() * 12) + (i % 4 === 0 ? 3 : 0));
+                // Generate accelerometer data (x, y, z) for movement detection
+                const x = (Math.random() - 0.5) * 2; // Range: -1 to 1
+                const y = (Math.random() - 0.5) * 2;
+                const z = (Math.random() - 0.5) * 2;
                 
-                // Suspicious activity data
-                if (days <= 30) {
-                    data.suspicious.push(Math.floor(Math.random() * 10) + 3);
-                }
-            }
-
-            // Generate suspicious data for weeks if more than 30 days
-            if (days > 30) {
-                const weeks = Math.ceil(days / 7);
-                data.labels = [];
-                data.suspicious = [];
-                for (let w = weeks - 1; w >= 0; w--) {
-                    data.labels.push(`Minggu ${w + 1}`);
-                    data.suspicious.push(Math.floor(Math.random() * 15) + 8);
-                }
+                // Calculate movement based on accelerometer data
+                const magnitude = Math.sqrt(x*x + y*y + z*z);
+                const movementCount = magnitude > 0.5 ? Math.floor(Math.random() * 5) + 1 : 0;
+                
+                data.push({
+                    date: dateString,
+                    human: Math.floor(Math.random() * 40) + 15,
+                    nonHuman: Math.floor(Math.random() * 25) + 8,
+                    chainsaw: Math.floor(Math.random() * 12) + (i % 4 === 0 ? 3 : 0),
+                    suspicious: days <= 30 ? Math.floor(Math.random() * 10) + 3 : 0,
+                    movement: movementCount,
+                    logs: []
+                });
             }
 
             // Generate activity logs
@@ -1075,21 +1124,26 @@
                 { type: 'suspicious', title: 'Aktivitas mencurigakan di Area D', area: 'Area D', time: '16:55' },
                 { type: 'human', title: 'Kelompok manusia di Area E', area: 'Area E', time: '09:15' },
                 { type: 'chainsaw', title: 'Chainsaw singkat terdeteksi', area: 'Area A', time: '13:10' },
-                { type: 'non-human', title: 'Gerakan hewan besar di Area F', area: 'Area F', time: '18:30' }
+                { type: 'non-human', title: 'Gerakan hewan besar di Area F', area: 'Area F', time: '18:30' },
+                { type: 'movement', title: 'Device berpindah terdeteksi', area: 'Area G', time: '15:30' }
             ];
 
-            for (let i = 0; i < 8; i++) {
-                const activity = activities[Math.floor(Math.random() * activities.length)];
-                const hoursAgo = Math.floor(Math.random() * 24);
-                const time = new Date(Date.now() - hoursAgo * 60 * 60 * 1000);
-                
-                data.logs.push({
-                    ...activity,
-                    id: i + 1,
-                    time: time.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
-                    ago: `${hoursAgo} jam yang lalu`
-                });
-            }
+            // Add logs to recent days
+            const recentDays = data.slice(-7);
+            recentDays.forEach((day, idx) => {
+                if (idx < 8) {
+                    const activity = activities[Math.floor(Math.random() * activities.length)];
+                    const hoursAgo = Math.floor(Math.random() * 24);
+                    const time = new Date(Date.now() - hoursAgo * 60 * 60 * 1000);
+                    
+                    day.logs.push({
+                        ...activity,
+                        id: idx + 1,
+                        time: time.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+                        ago: `${hoursAgo} jam yang lalu`
+                    });
+                }
+            });
 
             return data;
         }
@@ -1122,12 +1176,20 @@
                 date.setDate(now.getDate() - i);
                 const dateString = date.toISOString().split('T')[0];
                 
+                // Generate accelerometer data (x, y, z) for movement detection
+                const x = (Math.random() - 0.5) * 2; // Range: -1 to 1
+                const y = (Math.random() - 0.5) * 2;
+                const z = (Math.random() - 0.5) * 2;
+                
                 const dayData = {
                     date: dateString,
                     human: Math.floor(Math.random() * 50) + 10,
                     nonHuman: Math.floor(Math.random() * 100) + 20,
                     chainsaw: Math.floor(Math.random() * 15) + 1,
                     suspicious: Math.floor(Math.random() * 10) + 1,
+                    x: parseFloat(x.toFixed(2)),
+                    y: parseFloat(y.toFixed(2)),
+                    z: parseFloat(z.toFixed(2)),
                     timestamp: firebase.database.ServerValue.TIMESTAMP
                 };
                 
@@ -1183,113 +1245,328 @@
             return data;
         }
 
+        // Function to detect movement based on accelerometer data (x, y, z)
+        function detectMovement(records) {
+            if (!records || records.length < 2) return 0;
+            
+            let movementCount = 0;
+            const MOVEMENT_THRESHOLD = 0.5; // Threshold untuk mendeteksi perpindahan (dalam g)
+            
+            // Sort records by timestamp
+            const sortedRecords = [...records].sort((a, b) => {
+                const timeA = a.timestamp || (a.date ? new Date(a.date).getTime() : 0);
+                const timeB = b.timestamp || (b.date ? new Date(b.date).getTime() : 0);
+                return timeA - timeB;
+            });
+            
+            for (let i = 1; i < sortedRecords.length; i++) {
+                const prev = sortedRecords[i - 1];
+                const curr = sortedRecords[i];
+                
+                // Check if accelerometer data exists
+                if (prev.x !== undefined && prev.y !== undefined && prev.z !== undefined &&
+                    curr.x !== undefined && curr.y !== undefined && curr.z !== undefined) {
+                    
+                    // Calculate magnitude of acceleration change
+                    const dx = curr.x - prev.x;
+                    const dy = curr.y - prev.y;
+                    const dz = curr.z - prev.z;
+                    const magnitude = Math.sqrt(dx * dx + dy * dy + dz * dz);
+                    
+                    // If magnitude exceeds threshold, device has moved
+                    if (magnitude > MOVEMENT_THRESHOLD) {
+                        movementCount++;
+                    }
+                }
+            }
+            
+            return movementCount;
+        }
+
         // Get monitoring data from Firebase Realtime Database
         async function getMonitoringDataFromFirebase(days) {
             return new Promise((resolve) => {
                 const now = new Date();
                 const startDate = new Date(now);
                 startDate.setDate(now.getDate() - days);
+                const startTimestamp = startDate.getTime();
                 
-                // Get monitoring data
-                database.ref('monitoring')
-                    .orderByChild('timestamp')
-                    .startAt(startDate.getTime())
-                    .once('value')
-                    .then((snapshot) => {
-                        const allData = snapshot.val() || {};
-                        const dailyData = {};
-                        
-                        // Process all data and group by date
-                        Object.values(allData).forEach(record => {
-                            if (!record.timestamp) return;
-                            
-                            const date = new Date(record.timestamp);
-                            const dateString = date.toISOString().split('T')[0];
-                            
-                            if (!dailyData[dateString]) {
-                                dailyData[dateString] = {
-                                    date: dateString,
-                                    human: 0,
-                                    nonHuman: 0,
-                                    chainsaw: 0,
-                                    suspicious: 0,
-                                    logs: []
-                                };
-                            }
-                            
-                            // Sum up the values for each day
-                            const day = dailyData[dateString];
-                            day.human += record.human || 0;
-                            day.nonHuman += record.nonHuman || 0;
-                            day.chainsaw += record.chainsaw || 0;
-                            day.suspicious += record.suspicious || 0;
-                        });
-                        
-                        // Get logs from monitoring_logs
-                        database.ref('monitoring_logs')
-                            .once('value')
-                            .then((logSnapshot) => {
-                                const allLogs = logSnapshot.val() || {};
+                console.log('📊 Fetching monitoring data from Firebase Realtime Database...');
+                console.log('📅 Date range:', startDate.toISOString(), 'to', now.toISOString());
+                
+                // Try multiple paths to find monitoring data
+                const pathsToTry = [
+                    'monitoring', // Root monitoring path
+                    'monitoring_data', // Alternative path
+                    'data/monitoring', // Nested path
+                    'devices', // Device-based structure
+                ];
+                
+                let allRecords = [];
+                let pathsProcessed = 0;
+                
+                // Function to process data from a snapshot
+                const processSnapshot = (snapshot, path) => {
+                    const data = snapshot.val();
+                    if (!data) {
+                        console.log(`⚠️ No data found at path: ${path}`);
+                        return;
+                    }
+                    
+                    console.log(`✅ Found data at path: ${path}`, data);
+                    
+                            // Handle different data structures
+                            if (typeof data === 'object') {
+                                // First, check if data is directly a record (not organized by device)
+                                if (data.timestamp && data.timestamp >= startTimestamp) {
+                                    // Check if it looks like monitoring data
+                                    if (data.human !== undefined || data.chainsaw !== undefined || 
+                                        data.suspicious !== undefined || data.x !== undefined ||
+                                        data.humanDetection !== undefined || data.chainsawDetection !== undefined) {
+                                        allRecords.push({
+                                            ...data,
+                                            timestamp: data.timestamp
+                                        });
+                                    }
+                                }
                                 
-                                // Process logs by device and date
-                                Object.keys(allLogs).forEach(deviceKey => {
-                                    const deviceLogs = allLogs[deviceKey];
-                                    Object.keys(deviceLogs).forEach(dateKey => {
-                                        // Convert dateKey (YYYYMMDD) to dateString (YYYY-MM-DD)
-                                        const year = dateKey.substring(0, 4);
-                                        const month = dateKey.substring(4, 6);
-                                        const dayNum = dateKey.substring(6, 8);
-                                        const dateString = `${year}-${month}-${dayNum}`;
-                                        
-                                        if (dailyData[dateString]) {
-                                            const logs = deviceLogs[dateKey];
-                                            Object.keys(logs).forEach(logKey => {
-                                                dailyData[dateString].logs.push({
-                                                    ...logs[logKey],
-                                                    id: logKey
+                                // Check if it's organized by device or has nested structure
+                                Object.keys(data).forEach(key => {
+                                    const item = data[key];
+                                    
+                                    // Skip if it's already processed as direct record
+                                    if (key === 'timestamp' && data.timestamp) continue;
+                                    
+                                    // If item is an object with nested structure (device-based)
+                                    if (item && typeof item === 'object') {
+                                        // Check for nested structures like monitoring/{deviceId}/latest
+                                        if (item.latest) {
+                                            const record = item.latest;
+                                            if (record.timestamp && record.timestamp >= startTimestamp) {
+                                                allRecords.push({
+                                                    ...record,
+                                                    deviceId: key,
+                                                    timestamp: record.timestamp
                                                 });
+                                            }
+                                        }
+                                        // Check for monitoring sub-path in devices
+                                        else if (item.monitoring) {
+                                            const monitoring = item.monitoring;
+                                            if (typeof monitoring === 'object') {
+                                                Object.keys(monitoring).forEach(monKey => {
+                                                    const monRecord = monitoring[monKey];
+                                                    if (monRecord.timestamp && monRecord.timestamp >= startTimestamp) {
+                                                        allRecords.push({
+                                                            ...monRecord,
+                                                            deviceId: key,
+                                                            timestamp: monRecord.timestamp
+                                                        });
+                                                    }
+                                                });
+                                            }
+                                        }
+                                        // Check for array of records
+                                        else if (Array.isArray(item)) {
+                                            item.forEach(record => {
+                                                if (record.timestamp && record.timestamp >= startTimestamp) {
+                                                    allRecords.push({
+                                                        ...record,
+                                                        deviceId: key,
+                                                        timestamp: record.timestamp
+                                                    });
+                                                }
                                             });
                                         }
-                                    });
-                                });
-                                
-                                // Sort logs by time for each day
-                                Object.keys(dailyData).forEach(dateKey => {
-                                    dailyData[dateKey].logs.sort((a, b) => {
-                                        if (a.time && b.time) {
-                                            return a.time.localeCompare(b.time);
+                                        // Direct record object (check if it has monitoring fields)
+                                        else if (item.timestamp && item.timestamp >= startTimestamp) {
+                                            // Only add if it looks like monitoring data
+                                            if (item.human !== undefined || item.chainsaw !== undefined || 
+                                                item.suspicious !== undefined || item.x !== undefined ||
+                                                item.humanDetection !== undefined || item.chainsawDetection !== undefined) {
+                                                allRecords.push({
+                                                    ...item,
+                                                    deviceId: key,
+                                                    timestamp: item.timestamp
+                                                });
+                                            }
                                         }
-                                        return (a.timestamp || 0) - (b.timestamp || 0);
-                                    });
+                                        // Check for detections nested structure
+                                        else if (item.detections) {
+                                            const detections = item.detections;
+                                            if (typeof detections === 'object') {
+                                                Object.keys(detections).forEach(detectionKey => {
+                                                    const detection = detections[detectionKey];
+                                                    if (detection.timestamp && detection.timestamp >= startTimestamp) {
+                                                        allRecords.push({
+                                                            ...detection,
+                                                            deviceId: key,
+                                                            timestamp: detection.timestamp
+                                                        });
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    }
                                 });
-                                
-                                // Convert to array and sort by date
-                                const sortedData = Object.values(dailyData).sort((a, b) => 
-                                    new Date(a.date) - new Date(b.date)
-                                );
-                                
-                                // If no data, generate mock data
-                                if (sortedData.length === 0) {
-                                    console.log('No monitoring data found, using mock data');
-                                    resolve(generateMockData(days));
-                                } else {
-                                    resolve(sortedData);
-                                }
-                            })
-                            .catch((error) => {
-                                console.error('Error getting logs:', error);
-                                // Return data without logs if log retrieval fails
-                                const sortedData = Object.values(dailyData).sort((a, b) => 
-                                    new Date(a.date) - new Date(b.date)
-                                );
-                                resolve(sortedData.length > 0 ? sortedData : generateMockData(days));
-                            });
-                    })
-                    .catch((error) => {
-                        console.error('Error getting monitoring data:', error);
-                        // Fallback to mock data on error
+                            }
+                };
+                
+                // Try each path
+                pathsToTry.forEach((path, index) => {
+                    database.ref(path)
+                        .once('value')
+                        .then((snapshot) => {
+                            processSnapshot(snapshot, path);
+                            pathsProcessed++;
+                            
+                            // Also try to get data ordered by timestamp
+                            database.ref(path)
+                                .orderByChild('timestamp')
+                                .startAt(startTimestamp)
+                                .once('value')
+                                .then((orderedSnapshot) => {
+                                    if (orderedSnapshot.val()) {
+                                        processSnapshot(orderedSnapshot, `${path} (ordered)`);
+                                    }
+                                    
+                                    // When all paths are processed, continue with data processing
+                                    if (pathsProcessed === pathsToTry.length) {
+                                        processAllRecords();
+                                    }
+                                })
+                                .catch((error) => {
+                                    console.log(`⚠️ Could not order data from ${path}:`, error.message);
+                                    if (pathsProcessed === pathsToTry.length) {
+                                        processAllRecords();
+                                    }
+                                });
+                        })
+                        .catch((error) => {
+                            console.log(`⚠️ Could not read from path ${path}:`, error.message);
+                            pathsProcessed++;
+                            if (pathsProcessed === pathsToTry.length) {
+                                processAllRecords();
+                            }
+                        });
+                });
+                
+                // Function to process all collected records
+                const processAllRecords = () => {
+                    console.log(`📊 Total records collected: ${allRecords.length}`);
+                    
+                    if (allRecords.length === 0) {
+                        console.log('⚠️ No monitoring data found in Realtime Database');
                         resolve(generateMockData(days));
+                        return;
+                    }
+                    
+                    const dailyData = {};
+                    
+                    // Process all records and group by date
+                    allRecords.forEach(record => {
+                        if (!record.timestamp) return;
+                        
+                        const date = new Date(record.timestamp);
+                        const dateString = date.toISOString().split('T')[0];
+                        
+                        if (!dailyData[dateString]) {
+                            dailyData[dateString] = {
+                                date: dateString,
+                                human: 0,
+                                nonHuman: 0,
+                                chainsaw: 0,
+                                suspicious: 0,
+                                movement: 0,
+                                logs: [],
+                                records: [] // Store records for this day
+                            };
+                        }
+                        
+                        // Sum up the values for each day
+                        const day = dailyData[dateString];
+                        day.human += record.human || record.humanDetection || 0;
+                        day.nonHuman += record.nonHuman || record.nonHumanDetection || 0;
+                        day.chainsaw += record.chainsaw || record.chainsawDetection || 0;
+                        day.suspicious += record.suspicious || record.suspiciousMovement || record.suspiciousActivity || 0;
+                        day.records.push(record); // Store record for movement detection
                     });
+                    
+                    // Calculate movement for each day
+                    Object.keys(dailyData).forEach(dateString => {
+                        const dayRecords = dailyData[dateString].records;
+                        dailyData[dateString].movement = detectMovement(dayRecords);
+                    });
+                    
+                    // Get logs from monitoring_logs
+                    database.ref('monitoring_logs')
+                        .once('value')
+                        .then((logSnapshot) => {
+                            const allLogs = logSnapshot.val() || {};
+                            
+                            // Process logs by device and date
+                            Object.keys(allLogs).forEach(deviceKey => {
+                                const deviceLogs = allLogs[deviceKey];
+                                if (typeof deviceLogs === 'object') {
+                                    Object.keys(deviceLogs).forEach(dateKey => {
+                                        // Convert dateKey (YYYYMMDD) to dateString (YYYY-MM-DD)
+                                        if (dateKey.length === 8) {
+                                            const year = dateKey.substring(0, 4);
+                                            const month = dateKey.substring(4, 6);
+                                            const dayNum = dateKey.substring(6, 8);
+                                            const dateString = `${year}-${month}-${dayNum}`;
+                                            
+                                            if (dailyData[dateString]) {
+                                                const logs = deviceLogs[dateKey];
+                                                if (typeof logs === 'object') {
+                                                    Object.keys(logs).forEach(logKey => {
+                                                        dailyData[dateString].logs.push({
+                                                            ...logs[logKey],
+                                                            id: logKey
+                                                        });
+                                                    });
+                                                }
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                            
+                            // Sort logs by time for each day
+                            Object.keys(dailyData).forEach(dateKey => {
+                                dailyData[dateKey].logs.sort((a, b) => {
+                                    if (a.time && b.time) {
+                                        return a.time.localeCompare(b.time);
+                                    }
+                                    return (a.timestamp || 0) - (b.timestamp || 0);
+                                });
+                            });
+                            
+                            // Convert to array and sort by date
+                            const sortedData = Object.values(dailyData).sort((a, b) => 
+                                new Date(a.date) - new Date(b.date)
+                            );
+                            
+                            console.log(`✅ Processed ${sortedData.length} days of monitoring data`);
+                            
+                            // If no data, generate mock data
+                            if (sortedData.length === 0) {
+                                console.log('⚠️ No monitoring data found, using mock data');
+                                resolve(generateMockData(days));
+                            } else {
+                                resolve(sortedData);
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('Error getting logs:', error);
+                            // Return data without logs if log retrieval fails
+                            const sortedData = Object.values(dailyData).sort((a, b) => 
+                                new Date(a.date) - new Date(b.date)
+                            );
+                            console.log(`✅ Processed ${sortedData.length} days of monitoring data (without logs)`);
+                            resolve(sortedData.length > 0 ? sortedData : generateMockData(days));
+                        });
+                };
             });
         }
 
@@ -1311,16 +1588,19 @@
             const sortedData = [...data].sort((a, b) => new Date(a.date) - new Date(b.date));
             
             // Update or create human chart
-            updateOrCreateChart('human', 'Aktivitas Manusia', sortedData.map(d => d.human || 0), '#3b82f6', 'line');
+            updateOrCreateChart('human', 'Aktivitas Manusia', sortedData.map(d => d.human || 0), '#3b82f6', 'bar');
             
             // Update or create non-human chart
-            updateOrCreateChart('non-human', 'Aktivitas Non-Manusia', sortedData.map(d => d.nonHuman || 0), '#10b981', 'line');
+            updateOrCreateChart('non-human', 'Aktivitas Non-Manusia', sortedData.map(d => d.nonHuman || 0), '#10b981', 'bar');
             
             // Update or create chainsaw chart
             updateOrCreateChart('chainsaw', 'Chainsaw Terdeteksi', sortedData.map(d => d.chainsaw || 0), '#ef4444', 'bar');
             
             // Update or create suspicious chart
             updateOrCreateChart('suspicious', 'Aktivitas Mencurigakan', sortedData.map(d => d.suspicious || 0), '#f59e0b', 'bar');
+            
+            // Update or create movement chart
+            updateOrCreateChart('movement', 'Perpindahan Terdeteksi', sortedData.map(d => d.movement || 0), '#8b5cf6', 'bar');
         }
 
         // Helper function to update or create a chart
@@ -1508,6 +1788,7 @@
             const totalNonHuman = data.reduce((sum, day) => sum + (day.nonHuman || 0), 0);
             const totalChainsaw = data.reduce((sum, day) => sum + (day.chainsaw || 0), 0);
             const totalSuspicious = data.reduce((sum, day) => sum + (day.suspicious || 0), 0);
+            const totalMovement = data.reduce((sum, day) => sum + (day.movement || 0), 0);
             
             // Calculate trends (comparing last day with previous day)
             const today = data[data.length - 1] || {};
@@ -1518,6 +1799,7 @@
             animateCounter('non-human-count', totalNonHuman);
             animateCounter('chainsaw-count', totalChainsaw);
             animateCounter('suspicious-count', totalSuspicious);
+            animateCounter('movement-count', totalMovement);
             
             // Update trend indicators
             updateTrend('human', today.human || 0, yesterday.human || 0);
@@ -1808,14 +2090,7 @@
                 });
             });
             
-            // Chart type buttons
-            document.querySelectorAll('.action-btn[data-chart]').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const chartId = btn.dataset.chart;
-                    const chartType = btn.dataset.type;
-                    changeChartType(chartId, chartType);
-                });
-            });
+            // Chart type buttons removed - charts now use default type
             
             // Close alert button
             document.getElementById('close-alert').addEventListener('click', () => {

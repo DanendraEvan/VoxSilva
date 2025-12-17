@@ -1,15 +1,31 @@
 {
   "files": {
-    "main.css": "/static/css/main.16b1f1b2.css",
-    "main.js": "/static/js/main.58e48213.js",
+    "main.css": "/static/css/main.a68d8a48.css",
+    "main.js": "/static/js/main.2c03d53a.js",
+    "static/media/fotoFulTeam.png": "/static/media/fotoFulTeam.f029b6e472d2bcd781a9.png",
     "static/media/fotoProdukBenar.png": "/static/media/fotoProdukBenar.a584fb46c19149a698e9.png",
+    "static/media/Narendra Nararya Nurhan.png": "/static/media/Narendra Nararya Nurhan.6a18c393bb022a5b499a.png",
+    "static/media/Aditya Sakti Nugraha.png": "/static/media/Aditya Sakti Nugraha.56aa69d6d073071c164b.png",
+    "static/media/Adel Erasmo Farasya.png": "/static/media/Adel Erasmo Farasya.0edf1d85c0e252b999e6.png",
+    "static/media/Prodi Pengelolaan arsip dan rekaman informasi.png": "/static/media/Prodi Pengelolaan arsip dan rekaman informasi.3d61e2438682f3f6d3f7.png",
+    "static/media/Prodi Pengelolaan Hutan.png": "/static/media/Prodi Pengelolaan Hutan.168f6e5d8fb917b535a3.png",
+    "static/media/Javier Rafa Ramadhan.png": "/static/media/Javier Rafa Ramadhan.b9b9363f2dc552be304e.png",
+    "static/media/Aero Naufaly Fadian.png": "/static/media/Aero Naufaly Fadian.3b39f774b990035bc3ed.png",
+    "static/media/Muhammad Davino Ananda.png": "/static/media/Muhammad Davino Ananda.259d21de350608042747.png",
+    "static/media/Labolatorium Tour and Travel.png": "/static/media/Labolatorium Tour and Travel.b02acefdb2378d345fdb.png",
     "static/media/logo.png": "/static/media/logo.477f1949dfd20e29a84b.png",
+    "static/media/VoxSilva (3).png": "/static/media/VoxSilva (3).a46c4b017f5f874aedd0.png",
+    "static/media/VoxSilva (2).png": "/static/media/VoxSilva (2).1a55b6331bdc434d21ec.png",
+    "static/media/VoxSilva (1).png": "/static/media/VoxSilva (1).381809a4bd401df1266a.png",
+    "static/media/VoxSilva (6).png": "/static/media/VoxSilva (6).a0ee9ba373842fb28985.png",
+    "static/media/VoxSilva.png": "/static/media/VoxSilva.02917da64d561c5f2d62.png",
+    "static/media/VoxSilva (5).png": "/static/media/VoxSilva (5).45f3bc87e9d715c4bdda.png",
     "index.html": "/index.html",
-    "main.16b1f1b2.css.map": "/static/css/main.16b1f1b2.css.map",
-    "main.58e48213.js.map": "/static/js/main.58e48213.js.map"
+    "main.a68d8a48.css.map": "/static/css/main.a68d8a48.css.map",
+    "main.2c03d53a.js.map": "/static/js/main.2c03d53a.js.map"
   },
   "entrypoints": [
-    "static/css/main.16b1f1b2.css",
-    "static/js/main.58e48213.js"
+    "static/css/main.a68d8a48.css",
+    "static/js/main.2c03d53a.js"
   ]
 }

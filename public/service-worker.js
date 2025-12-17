@@ -1,6 +1,6 @@
-// Service Worker untuk PWA - Offline Support (Cache-first navigation)
-const PRECACHE_NAME = 'voxsilva-precache-v4';
-const RUNTIME_CACHE = 'voxsilva-runtime-v4';
+// Service Worker untuk PWA - Offline Support (Network-first untuk update otomatis)
+const PRECACHE_NAME = 'voxsilva-precache-v6';
+const RUNTIME_CACHE = 'voxsilva-runtime-v6';
 
 // Wajib dicache (sesuai requirement)
 const PRECACHE_URLS = [
@@ -50,34 +50,40 @@ async function putInRuntimeCache(request, response) {
   await cache.put(request, response);
 }
 
-async function cacheFirstNavigation(request) {
-  // Cache-first untuk navigasi halaman (document)
-  const cached = await caches.match(request, { ignoreSearch: true });
-  if (cached) return cached;
-
+async function networkFirstNavigation(request) {
+  // Network-first untuk navigasi halaman (selalu ambil versi terbaru)
   try {
-    const response = await fetch(request);
-    // Simpan copy ke runtime cache agar next time cache-first berhasil
-    await putInRuntimeCache(request, response.clone());
+    const response = await fetch(request, { cache: 'no-store' });
+    // Update cache dengan versi terbaru
+    if (response.ok) {
+      await putInRuntimeCache(request, response.clone());
+    }
     return response;
   } catch (_err) {
-    // Offline + tidak ada di cache => fallback ke /index.html
+    // Jika offline, gunakan cache sebagai fallback
+    const cached = await caches.match(request, { ignoreSearch: true });
+    if (cached) return cached;
+    // Jika tidak ada cache, fallback ke /index.html
     return (await caches.match(NAVIGATION_FALLBACK_URL, { ignoreSearch: true })) ||
       new Response('Offline', { status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
   }
 }
 
-async function cacheFirstAsset(request) {
-  const cached = await caches.match(request, { ignoreSearch: true });
-  if (cached) return cached;
-
-  const response = await fetch(request);
-  // Hanya cache same-origin (hindari caching cross-origin)
-  const url = new URL(request.url);
-  if (url.origin === self.location.origin) {
-    await putInRuntimeCache(request, response.clone());
+async function networkFirstAsset(request) {
+  // Network-first untuk assets (selalu cek versi terbaru dulu)
+  try {
+    const response = await fetch(request, { cache: 'no-store' });
+    // Update cache dengan versi terbaru
+    const url = new URL(request.url);
+    if (url.origin === self.location.origin && response.ok) {
+      await putInRuntimeCache(request, response.clone());
+    }
+    return response;
+  } catch (_err) {
+    // Jika offline, gunakan cache sebagai fallback
+    const cached = await caches.match(request, { ignoreSearch: true });
+    return cached || new Response('Offline', { status: 503 });
   }
-  return response;
 }
 
 self.addEventListener('fetch', (event) => {
@@ -87,19 +93,13 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   if (url.protocol === 'chrome-extension:') return;
 
-  // Cache-first untuk navigasi halaman
+  // Network-first untuk navigasi halaman (selalu ambil versi terbaru)
   if (request.mode === 'navigate' || request.destination === 'document') {
-    event.respondWith(cacheFirstNavigation(request));
+    event.respondWith(networkFirstNavigation(request));
     return;
   }
 
-  // Cache-first untuk assets (css/js/png/manifest/ikon, dll)
-  event.respondWith(
-    cacheFirstAsset(request).catch(async () => {
-      // Jika offline dan asset tidak ada di cache, jangan bikin navigasi gagal
-      const cached = await caches.match(request, { ignoreSearch: true });
-      return cached || new Response('Offline', { status: 503 });
-    })
-  );
+  // Network-first untuk assets (selalu cek versi terbaru dulu)
+  event.respondWith(networkFirstAsset(request));
 });
 

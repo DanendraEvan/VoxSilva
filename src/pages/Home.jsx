@@ -1,17 +1,31 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { FaWhatsapp, FaCheck, FaArrowRight } from 'react-icons/fa';
+import { FaWhatsapp, FaCheck, FaArrowRight, FaTimes } from 'react-icons/fa';
 import { IoIosArrowForward } from 'react-icons/io';
 
 // Import images from src/pages
 import heroImage from './fotoProdukBenar.png';
 import productImage from './fotoProdukBenar.png';
-import news1 from './fotoProdukBenar.png';
-import news2 from './fotoProdukBenar.png';
-import news3 from './fotoProdukBenar.png';
 import missionImage from './Mission.png';
+import labTourTravel from './Labolatorium Tour and Travel.png';
+import prodiArsip from './Prodi Pengelolaan arsip dan rekaman informasi.png';
+import prodiHutan from './Prodi Pengelolaan Hutan.png';
 import visionImage from './Visi.png';
+import sdgImage1 from './VoxSilva (4).png';
+import sdgImage2 from './VoxSilva (5).png';
+import sdgImage3 from './VoxSilva (6).png';
+import partnerImage1 from './VoxSilva.png';
+import partnerImage2 from './VoxSilva (1).png';
+import partnerImage3 from './VoxSilva (2).png';
+import partnerImage4 from './VoxSilva (3).png';
+import teamPhoto from './fotoFulTeam.png';
+import memberNarendra from './Narendra Nararya Nurhan.png';
+import memberAdel from './Adel Erasmo Farasya.png';
+import memberAditya from './Aditya Sakti Nugraha.png';
+import memberAero from './Aero Naufaly Fadian.png';
+import memberDavino from './Muhammad Davino Ananda.png';
+import memberJavier from './Javier Rafa Ramadhan.png';
 
 const stats = [
   { number: '10K+', label: 'Pohon Dilindungi' },
@@ -42,31 +56,27 @@ const features = [
   }
 ];
 
-const news = [
-  {
-    date: 'January 2, 2025',
-    category: 'Event',
-    title: 'PURIVA Kerjasama dengan Puskesmas Mergangsan',
-    excerpt: 'Kolaborasi ini bertujuan memperkuat akses dan kualitas layanan kesehatan masyarakat.',
-    image: news1
-  },
-  {
-    date: 'December 28, 2024',
-    category: 'Collaboration',
-    title: 'Uji coba PURIVA kepada Kepala SPPG Kemantren',
-    excerpt: 'Uji coba awal dilakukan untuk memastikan efektivitas program sebelum diperluas.',
-    image: news2
-  },
-  {
-    date: 'December 20, 2024',
-    category: 'Expansion',
-    title: 'Mechanism of UV-C in Eliminating Pathogens',
-    excerpt: 'UV-C light terbukti efektif dalam menghancurkan bakteri dan virus.',
-    image: news3
-  }
-];
-
 const Home = () => {
+  const [selectedGallery, setSelectedGallery] = useState(null);
+
+  const galleryItems = [
+    {
+      image: labTourTravel,
+      title: 'Labolatorium Tour and Travel',
+      description: 'Laboratorium Tour and Travel merupakan fasilitas pembelajaran yang mendukung pengembangan kompetensi di bidang pariwisata dan perjalanan. Laboratorium ini dilengkapi dengan peralatan modern untuk praktik tour planning, travel management, dan hospitality services.'
+    },
+    {
+      image: prodiArsip,
+      title: 'Prodi Pengelolaan Arsip dan Rekaman Informasi',
+      description: 'Program Studi Pengelolaan Arsip dan Rekaman Informasi fokus pada pengembangan keahlian dalam mengelola, mengorganisir, dan melestarikan dokumen serta rekaman informasi. Program ini mempersiapkan mahasiswa untuk menjadi profesional di bidang manajemen informasi dan arsip digital.'
+    },
+    {
+      image: prodiHutan,
+      title: 'Prodi Pengelolaan Hutan',
+      description: 'Program Studi Pengelolaan Hutan berkomitmen untuk melestarikan dan mengelola sumber daya hutan secara berkelanjutan. Program ini mengintegrasikan ilmu kehutanan modern dengan teknologi untuk mendukung konservasi hutan dan pengelolaan ekosistem yang bertanggung jawab.'
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-white pt-24">
       {/* Header */}
@@ -102,12 +112,12 @@ const Home = () => {
                 Sistem pemantauan hutan cerdas menggunakan ESP32 CAM dan MIC untuk mencegah penebangan liar dan melindungi hutan Indonesia.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <button className="bg-green-700 text-white font-semibold px-8 py-3 rounded-lg hover:bg-green-800 transition duration-300 flex items-center justify-center">
+                <a 
+                  href="/login.html"
+                  className="bg-green-700 text-white font-semibold px-8 py-3 rounded-lg hover:bg-green-800 transition duration-300 flex items-center justify-center"
+                >
                   Jelajahi VoxSilva <IoIosArrowForward className="ml-2" />
-                </button>
-                <button className="border-2 border-green-700 text-green-700 font-semibold px-8 py-3 rounded-lg hover:bg-green-50 transition duration-300">
-                  Lihat Demo
-                </button>
+                </a>
               </div>
             </motion.div>
             <motion.div
@@ -129,7 +139,7 @@ const Home = () => {
  
 
       {/* Product Section */}
-      <div className="py-16 bg-gray-50 text-center">
+      <div id="masalah" className="py-16 bg-gray-50 text-center scroll-mt-24">
         <h2 className="text-3xl font-bold mb-4">Masalah yang Kami Atasi</h2>
         <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto">
           Penebangan hutan ilegal di Indonesia mengancam kelestarian alam dan ekosistem.
@@ -289,36 +299,31 @@ const Home = () => {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mt-6 sm:mt-10 md:mt-16 px-2 sm:px-0">
               {[
                 {
-                  icon: '🌳',
-                  number: '10,000+',
-                  label: 'Pohon Terlindungi',
-                  description: 'Mencegah deforestasi ilegal'
+                  image: sdgImage1,
+                  label: 'Pohon Terlindungi'
                 },
                 {
-                  icon: '🌍',
-                  number: '500+',
-                  label: 'Spesies',
-                  description: 'Satwa liar yang dilindungi'
+                  image: sdgImage2,
+                  label: 'Spesies'
                 },
                 {
-                  icon: '🏆',
-                  number: '50+',
-                  label: 'Komunitas',
-                  description: 'Masyarakat yang didukung'
+                  image: sdgImage3,
+                  label: 'Komunitas'
                 }
               ].map((item, index) => (
                 <motion.div 
                   key={index}
-                  className="bg-white/10 backdrop-blur-md p-2 sm:p-4 md:p-6 rounded-lg sm:rounded-2xl border border-white/20 hover:bg-white/20 transition-all duration-300"
+                  className="flex items-center justify-center"
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.2 }}
                 >
-                  <div className="text-3xl sm:text-5xl mb-1 sm:mb-3">{item.icon}</div>
-                  <div className="text-xl sm:text-4xl font-bold mb-0 sm:mb-1">{item.number}</div>
-                  <div className="text-xs sm:text-lg font-semibold mb-0 sm:mb-1">{item.label}</div>
-                  <div className="hidden sm:block text-xs text-gray-300">{item.description}</div>
+                  <img 
+                    src={item.image} 
+                    alt={item.label}
+                    className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 object-contain"
+                  />
                 </motion.div>
               ))}
             </div>
@@ -329,9 +334,12 @@ const Home = () => {
               transition={{ delay: 0.5, duration: 0.8 }}
               className="mt-12 sm:mt-16 mb-16 sm:mb-0"
             >
-              <button className="bg-green-600 hover:bg-green-700 text-white font-semibold px-8 py-4 rounded-full text-lg transition-all duration-300 transform hover:scale-105">
+              <a 
+                href="#contact"
+                className="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold px-8 py-4 rounded-full text-lg transition-all duration-300 transform hover:scale-105"
+              >
                 Bergabung dengan Kami
-              </button>
+              </a>
             </motion.div>
           </motion.div>
         </div>
@@ -343,103 +351,176 @@ const Home = () => {
           <h2 className="text-3xl font-bold text-center text-gray-800 mb-12">Our Partners</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center justify-items-center">
             {[
-              { name: 'Ministry of Environment', logo: '🌲' },
-              { name: 'Global Wildlife Fund', logo: '🐼' },
-              { name: 'Forest Research Institute', logo: '🔬' },
-              { name: 'EcoTech Solutions', logo: '🌍' },
+              { image: partnerImage1 },
+              { image: partnerImage2 },
+              { image: partnerImage3 },
+              { image: partnerImage4 },
             ].map((partner, index) => (
               <motion.div 
                 key={index}
-                className="flex flex-col items-center p-6 rounded-xl bg-gray-50 hover:shadow-lg transition-all duration-300 w-full max-w-xs"
-                whileHover={{ y: -5 }}
+                className="flex items-center justify-center"
+                whileHover={{ y: -5, scale: 1.05 }}
+                transition={{ duration: 0.3 }}
               >
-                <div className="text-5xl mb-4">{partner.logo}</div>
-                <h3 className="text-lg font-semibold text-gray-800 text-center">{partner.name}</h3>
+                <img 
+                  src={partner.image}
+                  alt={`Partner ${index + 1}`}
+                  className="w-full max-w-xs h-auto object-contain opacity-80 hover:opacity-100 transition-opacity duration-300"
+                />
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Contact Section */}
+      {/* Gallery Section */}
       <section id="news" className="py-16 bg-white border-b border-gray-200">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center text-gray-800 mb-12">Latest News</h2>
+          <h2 className="text-3xl font-bold text-center text-gray-800 mb-12">Gallery</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                title: 'New Forest Protection Initiative',
-                date: 'November 28, 2023',
-                excerpt: 'Launching a new initiative to protect endangered forest areas using our monitoring technology.',
-                category: 'Announcement'
-              },
-              {
-                title: 'AI Technology Breakthrough',
-                date: 'November 20, 2023',
-                excerpt: 'Our AI system now achieves 98% accuracy in detecting illegal logging activities.',
-                category: 'Technology'
-              },
-              {
-                title: 'Community Outreach Program',
-                date: 'November 15, 2023',
-                excerpt: 'Educating local communities about sustainable forest management practices.',
-                category: 'Community'
-              }
-            ].map((news, index) => (
+            {galleryItems.map((item, index) => (
               <motion.div 
                 key={index}
-                className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
+                className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden cursor-pointer"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
+                whileHover={{ y: -5 }}
+                onClick={() => setSelectedGallery(item)}
               >
-                <span className="text-sm text-green-600 font-medium">{news.category}</span>
-                <h3 className="text-xl font-semibold mt-2 mb-3 text-gray-800">{news.title}</h3>
-                <p className="text-gray-600 mb-4">{news.excerpt}</p>
-                <span className="text-sm text-gray-500">{news.date}</span>
+                <div className="w-full h-64 overflow-hidden">
+                  <img 
+                    src={item.image}
+                    alt={item.title}
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <div className="p-4">
+                  <h3 className="text-lg font-semibold text-gray-800 text-center">{item.title}</h3>
+                </div>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
+      {/* Modal Gallery */}
+      <AnimatePresence>
+        {selectedGallery && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+            onClick={() => setSelectedGallery(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setSelectedGallery(null)}
+                className="absolute top-4 right-4 z-10 p-2 bg-white rounded-full shadow-lg hover:bg-gray-100 transition-colors"
+              >
+                <FaTimes className="text-gray-700 text-xl" />
+              </button>
+
+              {/* Image */}
+              <div className="w-full h-96 overflow-hidden rounded-t-2xl">
+                <img
+                  src={selectedGallery.image}
+                  alt={selectedGallery.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              {/* Content */}
+              <div className="p-6 md:p-8">
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+                  {selectedGallery.title}
+                </h2>
+                <p className="text-gray-600 text-base md:text-lg leading-relaxed">
+                  {selectedGallery.description}
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
 
 
       {/* Team Section */}
-      <section id="team" className="py-16 bg-white">
+      <section id="team" className="py-16 bg-black">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center text-gray-800 mb-4">Tim Pengembang</h2>
-          <p className="text-center text-gray-600 max-w-2xl mx-auto mb-12">Tim inovatif di balik solusi pemantauan hutan VoxSilva</p>
+          <h2 className="text-3xl font-bold text-center text-white mb-4">Tim Pengembang</h2>
+          <p className="text-center text-gray-300 max-w-2xl mx-auto mb-12">Tim inovatif di balik solusi pemantauan hutan VoxSilva</p>
+          
+          {/* Team Photo - Cinematic Design */}
+          <div className="relative mb-12 w-full overflow-hidden rounded-2xl">
+            <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-black/80 z-10"></div>
+            <div className="absolute inset-0 bg-black/40 z-20"></div>
+            <motion.div
+              initial={{ opacity: 0, scale: 1.1 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1.2, ease: "easeOut" }}
+              className="relative z-30 flex justify-center items-center py-16 px-4"
+            >
+              <img 
+                src={teamPhoto}
+                alt="Tim Pengembang VoxSilva"
+                className="w-full max-w-5xl h-auto rounded-xl shadow-2xl object-contain filter brightness-110 contrast-105"
+              />
+            </motion.div>
+            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black via-black/50 to-transparent z-20"></div>
+            <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-black via-black/50 to-transparent z-20"></div>
+          </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
             {[
-              { name: 'Narendra Nararya Nurhan', role: 'Tim Pengembang', expertise: 'Full Stack Development' },
-              { name: 'Adel Erasmo Farasya', role: 'Tim Pengembang', expertise: 'Hardware & IoT' },
-              { name: 'Aditya Sakti Nugraha', role: 'Tim Pengembang', expertise: 'AI & Machine Learning' },
-              { name: 'Aero Naufaly Fadian', role: 'Tim Pengembang', expertise: 'UI/UX Design' },
-              { name: 'Muhammad Davino Ananda', role: 'Tim Pengembang', expertise: 'Backend Development' },
-              { name: 'W Javier Rafa Ramadhan', role: 'Tim Pengembang', expertise: 'Mobile Development' }
+              { name: 'Narendra Nararya Nurhan', photo: memberNarendra  },
+              { name: 'Adel Erasmo Farasya', photo: memberAdel},
+              { name: 'Aditya Sakti Nugraha', photo: memberAditya},
+              { name: 'Aero Naufaly Fadian', photo: memberAero},
+              { name: 'Muhammad Davino Ananda', photo: memberDavino },
+              { name: 'W Javier Rafa Ramadhan', photo: memberJavier}
             ].map((member, index) => (
               <motion.div 
                 key={index}
-                className="bg-white p-4 rounded-xl shadow-md text-center hover:shadow-xl transition-all duration-300 flex flex-col h-full"
+                className="bg-gray-900 border border-gray-800 p-4 rounded-xl shadow-md text-center hover:shadow-xl hover:bg-gray-800 transition-all duration-300 flex flex-col h-full"
                 whileHover={{ y: -5 }}
               >
-                <div className="w-20 h-20 sm:w-24 sm:h-24 bg-green-100 rounded-full mx-auto mb-3 flex items-center justify-center text-2xl sm:text-3xl text-green-600">
-                  {member.name.split(' ').map(n => n[0]).join('')}
+                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full mx-auto mb-3 overflow-hidden border-2 border-green-600 flex items-center justify-center">
+                  <img 
+                    src={member.photo}
+                    alt={member.name}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-                <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-1">{member.name.split(' ')[0]}</h3>
-                <h4 className="text-sm sm:text-base text-gray-700">{member.name.split(' ').slice(1).join(' ')}</h4>
-                <p className="text-green-600 text-sm font-medium mt-2">{member.role}</p>
-                <p className="text-xs text-gray-500 mt-1">{member.expertise}</p>
+                {member.name.startsWith('W Javier') ? (
+                  <>
+                    <h3 className="text-base sm:text-lg font-semibold text-white mb-1">W Javier</h3>
+                    <h4 className="text-sm sm:text-base text-gray-300">Rafa Ramadhan</h4>
+                  </>
+                ) : (
+                  <>
+                    <h3 className="text-base sm:text-lg font-semibold text-white mb-1">{member.name.split(' ')[0]}</h3>
+                    <h4 className="text-sm sm:text-base text-gray-300">{member.name.split(' ').slice(1).join(' ')}</h4>
+                  </>
+                )}
               </motion.div>
             ))}
           </div>
         </div>
       </section>
                   {/* Contact Section */}
-      <section id="contact" className="py-16 bg-white">
+      <section id="contact" className="py-16 bg-white scroll-mt-24">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Siap Melindungi Hutan Indonesia?</h2>

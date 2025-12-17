@@ -1,6 +1,6 @@
 // Service Worker untuk PWA - Offline Support (Cache-first navigation)
-const PRECACHE_NAME = 'voxsilva-precache-v4';
-const RUNTIME_CACHE = 'voxsilva-runtime-v4';
+const PRECACHE_NAME = 'voxsilva-precache-v5';
+const RUNTIME_CACHE = 'voxsilva-runtime-v5';
 
 // Wajib dicache (sesuai requirement)
 const PRECACHE_URLS = [
