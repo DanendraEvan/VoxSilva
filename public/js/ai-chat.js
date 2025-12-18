@@ -145,72 +145,44 @@ if (document.readyState === 'loading') {
 }
 
 function integrateWithChat() {
-    // Override sendMessage function in chat.html
-    const originalSendMessage = window.sendMessage;
+    // Don't override sendMessage - let chat.html handle it
+    // Instead, enhance the Gemini prompt with monitoring data when available
     
-    window.sendMessage = async function() {
-        const input = document.getElementById('chat-input');
-        const message = input.value.trim();
-        
-        if (!message) return;
-        
-        // Add user message
-        if (typeof addMessage === 'function') {
-            addMessage(message, 'user');
-        }
-        
-        input.value = '';
-        if (input.style) {
-            input.style.height = 'auto';
-        }
-        
-        // Show typing indicator
-        if (typeof showTypingIndicator === 'function') {
-            showTypingIndicator();
-        }
-        
-        try {
-            // First try to get response from monitoring data (ai-chat.js)
-            let reply = null;
-            if (typeof getAIResponse === 'function') {
-                reply = await getAIResponse(message);
-            }
-            
-            // If no reply from monitoring data, try Gemini (if available)
-            if (!reply && typeof window.askGemini === 'function') {
-                // Initialize Gemini if needed
-                if (typeof initializeGemini === 'function') {
-                    await initializeGemini();
+    // Store original askGemini if it exists
+    const originalAskGemini = window.askGemini;
+    
+    // Enhance Gemini responses with monitoring data
+    if (typeof window.askGemini === 'function') {
+        const enhancedAskGemini = async (userPrompt) => {
+            try {
+                // Get monitoring data if available
+                const summary = window.getMonitoringSummary ? window.getMonitoringSummary() : null;
+                
+                // Enhance prompt with monitoring context if available
+                let enhancedPrompt = userPrompt;
+                if (summary) {
+                    enhancedPrompt = `${userPrompt}\n\n[Context: Current monitoring data - Human: ${summary.overall.human}, Non-human: ${summary.overall.nonHuman}, Chainsaw: ${summary.overall.chainsaw}, Suspicious: ${summary.overall.suspicious}]`;
                 }
-                if (typeof window.askGemini === 'function') {
-                    reply = await window.askGemini(message);
+                
+                // Use original Gemini function
+                if (originalAskGemini) {
+                    return await originalAskGemini(enhancedPrompt);
+                } else if (window.askGemini) {
+                    return await window.askGemini(enhancedPrompt);
                 }
+            } catch (error) {
+                console.error('Error in enhanced AI chat:', error);
+                throw error;
             }
-            
-            // If still no reply, use default
-            if (!reply) {
-                reply = 'Maaf, saya tidak dapat memberikan respons saat ini. Pastikan data monitoring tersedia.';
-            }
-            
-            // Remove typing indicator
-            if (typeof removeTypingIndicator === 'function') {
-                removeTypingIndicator();
-            }
-            
-            // Add AI response
-            if (typeof addMessage === 'function') {
-                addMessage(reply, 'ai');
-            }
-        } catch (error) {
-            console.error('Error in AI chat:', error);
-            if (typeof removeTypingIndicator === 'function') {
-                removeTypingIndicator();
-            }
-            if (typeof addMessage === 'function') {
-                addMessage('⚠️ Terjadi kesalahan. Silakan coba lagi.', 'ai');
-            }
+        };
+        
+        // Only enhance if original exists
+        if (originalAskGemini) {
+            window.askGemini = enhancedAskGemini;
         }
-    };
+    }
+    
+    console.log('✅ AI Chat integrated with monitoring data (non-intrusive)');
 }
 
 // Make getAIResponse available globally

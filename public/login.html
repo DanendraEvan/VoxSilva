@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -454,7 +454,7 @@
                 <i class="fas fa-brain"></i>
             </div>
             <h1 class="login-title">VoxSilva</h1>
-            <p class="login-subtitle">Masuk untuk mengakses dashboard</p>
+            <p class="login-subtitle">Sign in to access the dashboard</p>
         </div>
 
         <!-- Login Card -->
@@ -466,14 +466,14 @@
             <!-- Email Input -->
             <div class="form-group">
                 <label class="form-label">Email</label>
-                <input type="email" id="email-input" class="form-input" placeholder="Masukkan email Anda" autocomplete="email" required>
+                <input type="email" id="email-input" class="form-input" placeholder="Enter your email" autocomplete="email" required>
             </div>
 
             <!-- Password Input -->
             <div class="form-group">
                 <label class="form-label">Password</label>
                 <div class="password-wrapper">
-                    <input type="password" id="password-input" class="form-input" placeholder="Masukkan password Anda" autocomplete="current-password" required>
+                    <input type="password" id="password-input" class="form-input" placeholder="Enter your password" autocomplete="current-password" required>
                     <button type="button" class="password-toggle" id="password-toggle">
                         <i class="fas fa-eye"></i>
                     </button>
@@ -486,39 +486,39 @@
                     <div class="remember-checkbox" id="remember-checkbox">
                         <i class="fas fa-check"></i>
                     </div>
-                    <span class="remember-label" id="remember-label">Ingat saya</span>
+                    <span class="remember-label" id="remember-label">Remember me</span>
                 </div>
-                <a href="#" class="forgot-password" id="forgot-password">Lupa password?</a>
+                <a href="#" class="forgot-password" id="forgot-password">Forgot password?</a>
             </div>
 
             <!-- Login Button -->
             <button type="button" class="login-button" id="login-button">
                 <i class="fas fa-sign-in-alt"></i>
-                <span id="button-text">Masuk</span>
+                <span id="button-text">Sign In</span>
                 <i class="fas fa-spinner spinner" id="loading-spinner"></i>
             </button>
 
             <!-- Divider -->
             <div class="divider">
-                <span>Atau lanjutkan dengan</span>
+                <span>Or continue with</span>
             </div>
 
             <!-- Google Login Button -->
             <button type="button" class="google-button" id="google-button">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
-                <span>Login dengan Google</span>
+                <span>Sign in with Google</span>
             </button>
 
             <!-- Signup Link -->
             <div class="signup-link">
-                <span>Belum punya akun?</span>
-                <a href="/daftar.html" id="signup-link">Daftar di sini</a>
+                <span>Don't have an account?</span>
+                <a href="/daftar.html" id="signup-link">Sign up here</a>
             </div>
         </div>
     </div>
 
     <script>
-        // Tunggu Firebase SDK dimuat
+        // Wait for Firebase SDK to load
         document.addEventListener('DOMContentLoaded', function() {
             // UI Elements
             const emailInput = document.getElementById('email-input');
@@ -583,7 +583,7 @@
                 const email = emailInput.value.trim();
                 
                 if (!email) {
-                    showError('Silakan masukkan email Anda untuk reset password');
+                    showError('Please enter your email to reset password');
                     return;
                 }
                 
@@ -591,8 +591,8 @@
                 
                 try {
                     await window.firebaseSendPasswordResetEmail(window.firebaseAuth, email);
-                    showSuccess('Email reset password telah dikirim! Silakan cek inbox Anda.');
-                } catch (error) {
+                    showSuccess('Password reset email has been sent! Please check your inbox.');
+                    } catch (error) {
                     showError(getErrorMessage(error.code));
                 } finally {
                     hideLoading();
@@ -605,7 +605,7 @@
                 const password = passwordInput.value;
                 
                 if (!email || !password) {
-                    showError('Silakan isi email dan password');
+                    showError('Please fill in email and password');
                     return;
                 }
                 
@@ -625,7 +625,7 @@
                         localStorage.setItem('savedEmail', email);
                     }
                     
-                    showSuccess('Login berhasil! Mengarahkan ke dashboard...');
+                    showSuccess('Login successful! Redirecting to dashboard...');
                     
                     // Redirect after 1 second
                     setTimeout(() => {
@@ -683,7 +683,7 @@
                     await window.firebaseSignInWithPopup(window.firebaseAuth, provider);
                     
                     // Show success message
-                    showSuccess('Login berhasil! Mengarahkan...');
+                    showSuccess('Login successful! Redirecting...');
                     
                     // The auth state change listener will handle the redirect
                     
@@ -732,22 +732,22 @@
 
             function getErrorMessage(errorCode) {
                 const errorMessages = {
-                    'auth/invalid-email': 'Email tidak valid',
-                    'auth/user-disabled': 'Akun dinonaktifkan',
-                    'auth/user-not-found': 'Akun tidak ditemukan',
-                    'auth/wrong-password': 'Password salah',
-                    'auth/email-already-in-use': 'Email sudah terdaftar',
-                    'auth/weak-password': 'Password terlalu lemah (minimal 6 karakter)',
-                    'auth/operation-not-allowed': 'Operasi tidak diizinkan',
-                    'auth/too-many-requests': 'Terlalu banyak percobaan gagal. Coba lagi nanti',
-                    'auth/popup-closed-by-user': 'Popup login ditutup oleh pengguna',
-                    'auth/popup-blocked': 'Popup login diblokir oleh browser',
-                    'auth/network-request-failed': 'Koneksi jaringan gagal. Periksa koneksi internet Anda',
-                    'auth/invalid-credential': 'Kredensial login tidak valid',
-                    'auth/account-exists-with-different-credential': 'Akun sudah terdaftar dengan metode login yang berbeda'
+                    'auth/invalid-email': 'Invalid email',
+                    'auth/user-disabled': 'Account disabled',
+                    'auth/user-not-found': 'Account not found',
+                    'auth/wrong-password': 'Wrong password',
+                    'auth/email-already-in-use': 'Email already registered',
+                    'auth/weak-password': 'Password too weak (minimum 6 characters)',
+                    'auth/operation-not-allowed': 'Operation not allowed',
+                    'auth/too-many-requests': 'Too many failed attempts. Please try again later',
+                    'auth/popup-closed-by-user': 'Login popup closed by user',
+                    'auth/popup-blocked': 'Login popup blocked by browser',
+                    'auth/network-request-failed': 'Network connection failed. Please check your internet connection',
+                    'auth/invalid-credential': 'Invalid login credentials',
+                    'auth/account-exists-with-different-credential': 'Account already registered with a different login method'
                 };
                 
-                return errorMessages[errorCode] || `Terjadi kesalahan: ${errorCode}. Silakan coba lagi.`;
+                return errorMessages[errorCode] || `An error occurred: ${errorCode}. Please try again.`;
             }
 
             // Allow form submission with Enter key
@@ -773,7 +773,7 @@
                 });
             }
 
-            // Catatan: jangan hardcode environment dev/prod atau hostname tertentu di production.
+            // Note: do not hardcode dev/prod environment or specific hostname in production.
         });
 
     </script>

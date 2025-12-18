@@ -329,6 +329,39 @@
             }
         },
 
+        async deleteUser() {
+            try {
+                const user = firebase.auth().currentUser;
+                if (!user) {
+                    return { success: false, error: 'No user logged in' };
+                }
+
+                const userId = user.uid;
+
+                // Log account deletion action
+                await db.collection('user_logs').add({
+                    userId: userId,
+                    action: 'account_deleted',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // Delete user data from Firestore
+                try {
+                    await db.collection('users').doc(userId).delete();
+                } catch (error) {
+                    console.warn('Error deleting user data from Firestore:', error);
+                    // Continue even if Firestore deletion fails
+                }
+
+                // Delete user from Firebase Auth
+                await user.delete();
+                
+                return { success: true };
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        },
+
         // Check auth state
         onAuthStateChanged(callback) {
             return firebase.auth().onAuthStateChanged((user) => {

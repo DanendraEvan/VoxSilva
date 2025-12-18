@@ -19,17 +19,17 @@ import partnerImage1 from './VoxSilva.png';
 import partnerImage2 from './VoxSilva (1).png';
 import partnerImage3 from './VoxSilva (2).png';
 import partnerImage4 from './VoxSilva (3).png';
-import teamPhoto from './fotoFulTeam.png';
-import memberNarendra from './Narendra Nararya Nurhan.png';
-import memberAdel from './Adel Erasmo Farasya.png';
-import memberAditya from './Aditya Sakti Nugraha.png';
-import memberAero from './Aero Naufaly Fadian.png';
-import memberDavino from './Muhammad Davino Ananda.png';
-import memberJavier from './Javier Rafa Ramadhan.png';
+import teamPhoto from './fotoTeam.jpeg';
+import memberNarendra from './narendra.jpeg';
+import memberAdel from './elmo.jpeg';
+import memberAditya from './adit.jpeg';
+import memberAero from './Aero.jpeg';
+import memberDavino from './davino.jpeg';
+import memberJavier from './javier.jpeg';
 
 const stats = [
   { number: '10K+', label: 'Pohon Dilindungi' },
-  { number: '99.9%', label: 'Akurasi Deteksi' },
+  { number: '80%', label: 'Akurasi Deteksi' },
   { number: '24/7', label: 'Pemantauan Real-time' }
 ];
 
@@ -62,20 +62,20 @@ const Home = () => {
   const galleryItems = [
     {
       image: labTourTravel,
-      title: 'Labolatorium Tour and Travel',
-      description: 'Laboratorium Tour and Travel merupakan fasilitas pembelajaran yang mendukung pengembangan kompetensi di bidang pariwisata dan perjalanan. Laboratorium ini dilengkapi dengan peralatan modern untuk praktik tour planning, travel management, dan hospitality services.'
+      title: 'Tour and Travel Laboratory',
+      description: 'The Tour and Travel Laboratory is a learning facility that supports competency development in the tourism and travel industry. This laboratory is equipped with modern equipment for tour planning, travel management, and hospitality services practice.'
     },
     {
       image: prodiArsip,
-      title: 'Prodi Pengelolaan Arsip dan Rekaman Informasi',
-      description: 'Program Studi Pengelolaan Arsip dan Rekaman Informasi fokus pada pengembangan keahlian dalam mengelola, mengorganisir, dan melestarikan dokumen serta rekaman informasi. Program ini mempersiapkan mahasiswa untuk menjadi profesional di bidang manajemen informasi dan arsip digital.'
+      title: 'Archives and Information Management Program',
+      description: 'The Archives and Information Management Program focuses on developing skills in managing, organizing, and preserving documents and information records. This program prepares students to become professionals in information management and digital archives.'
     },
     {
       image: prodiHutan,
-      title: 'Prodi Pengelolaan Hutan',
-      description: 'Program Studi Pengelolaan Hutan berkomitmen untuk melestarikan dan mengelola sumber daya hutan secara berkelanjutan. Program ini mengintegrasikan ilmu kehutanan modern dengan teknologi untuk mendukung konservasi hutan dan pengelolaan ekosistem yang bertanggung jawab.'
-    }
-  ];
+      title: 'Forest Management Program',
+      description: 'The Forest Management Program is committed to conserving and managing forest resources sustainably. This program integrates modern forestry science with technology to support forest conservation and responsible ecosystem management.'
+  }
+];
 
   return (
     <div className="min-h-screen bg-white pt-24">
@@ -107,16 +107,16 @@ const Home = () => {
               className="lg:w-1/2 text-left"
             >
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 text-gray-900">VoxSilva Pro</h1>
-              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-green-700">Sistem Perlindungan Hutan</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-green-700">Forest Protection System</h2>
               <p className="text-lg md:text-xl mb-8 text-gray-700 max-w-2xl">
-                Sistem pemantauan hutan cerdas menggunakan ESP32 CAM dan MIC untuk mencegah penebangan liar dan melindungi hutan Indonesia.
+                An intelligent forest monitoring system using ESP32 CAM and MIC to prevent illegal logging and protect Indonesia's forests.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <a 
                   href="/login.html"
                   className="bg-green-700 text-white font-semibold px-8 py-3 rounded-lg hover:bg-green-800 transition duration-300 flex items-center justify-center"
                 >
-                  Jelajahi VoxSilva <IoIosArrowForward className="ml-2" />
+Explore VoxSilva <IoIosArrowForward className="ml-2" />
                 </a>
               </div>
             </motion.div>
@@ -140,27 +140,27 @@ const Home = () => {
 
       {/* Product Section */}
       <div id="masalah" className="py-16 bg-gray-50 text-center scroll-mt-24">
-        <h2 className="text-3xl font-bold mb-4">Masalah yang Kami Atasi</h2>
+        <h2 className="text-3xl font-bold mb-4">Problems We Solve</h2>
         <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto">
-          Penebangan hutan ilegal di Indonesia mengancam kelestarian alam dan ekosistem.
+          Illegal logging in Indonesia threatens nature conservation and ecosystems.
         </p>
         
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-5xl mx-auto px-4">
           <div className="p-6 bg-white rounded-xl shadow-sm">
-            <div className="text-4xl font-bold text-green-700 mb-2">1.2 Jt</div>
-            <div className="text-gray-600">Hektar Hutan Hilang/Tahun</div>
+            <div className="text-4xl font-bold text-green-700 mb-2">1.2M</div>
+            <div className="text-gray-600">Hectares of Forest Lost/Year</div>
           </div>
           <div className="p-6 bg-white rounded-xl shadow-sm">
             <div className="text-4xl font-bold text-green-700 mb-2">85%</div>
-            <div className="text-gray-600">Kasus Tidak Terdeteksi</div>
+            <div className="text-gray-600">Undetected Cases</div>
           </div>
           <div className="p-6 bg-white rounded-xl shadow-sm">
             <div className="text-4xl font-bold text-green-700 mb-2">60%</div>
-            <div className="text-gray-600">Tanpa Pengawasan</div>
+            <div className="text-gray-600">Without Surveillance</div>
           </div>
           <div className="p-6 bg-white rounded-xl shadow-sm">
             <div className="text-4xl font-bold text-green-700 mb-2">100%</div>
-            <div className="text-gray-600">Dapat Dicegah</div>
+            <div className="text-gray-600">Preventable</div>
           </div>
         </div>
       </div>
@@ -170,9 +170,9 @@ const Home = () => {
       <section id="product" className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold mb-4">Tentang VoxSilva</h2>
+            <h2 className="text-3xl font-bold mb-4">About VoxSilva</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Solusi canggih untuk melindungi hutan Indonesia dari penebangan liar dengan teknologi AI dan IoT.
+              Advanced solution to protect Indonesia's forests from illegal logging using AI and IoT technology.
             </p>
           </div>
 
@@ -187,19 +187,19 @@ const Home = () => {
             
             <div className="space-y-6">
               <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300">
-                <div className="text-2xl text-green-600 mb-2">99.9%</div>
-                <h3 className="text-xl font-semibold mb-2">Akurasi Deteksi</h3>
-                <p className="text-gray-600">Teknologi AI canggih untuk mendeteksi aktivitas ilegal</p>
+                <div className="text-2xl text-green-600 mb-2">80%</div>
+                <h3 className="text-xl font-semibold mb-2">Detection Accuracy</h3>
+                <p className="text-gray-600">Advanced AI technology to detect illegal activities</p>
               </div>
               <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300">
-                <div className="text-2xl text-green-600 mb-2">Pemantauan</div>
+                <div className="text-2xl text-green-600 mb-2">Monitoring</div>
                 <h3 className="text-xl font-semibold mb-2">Real-time</h3>
-                <p className="text-gray-600">Pemantauan 24/7 dengan notifikasi instan</p>
+                <p className="text-gray-600">24/7 monitoring with instant notifications</p>
               </div>
               <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300">
-                <div className="text-2xl text-green-600 mb-2">Ramah Lingkungan</div>
-                <h3 className="text-xl font-semibold mb-2">Tenaga Surya</h3>
-                <p className="text-gray-600">Bertenaga surya untuk operasional berkelanjutan</p>
+                <div className="text-2xl text-green-600 mb-2">Eco-Friendly</div>
+                <h3 className="text-xl font-semibold mb-2">Solar Powered</h3>
+                <p className="text-gray-600">Solar-powered for sustainable operations</p>
               </div>
             </div>
           </div>
@@ -211,7 +211,7 @@ const Home = () => {
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold">Visi & Misi</h2>
+            <h2 className="text-3xl font-bold">Vision & Mission</h2>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -223,11 +223,11 @@ const Home = () => {
                   alt="Visi" 
                   className="w-10 h-10 object-contain mr-4"
                 />
-                <h3 className="text-2xl font-bold text-gray-800">Visi</h3>
+                <h3 className="text-2xl font-bold text-gray-800">Vision</h3>
               </div>
               <div className="flex-grow flex flex-col">
                 <p className="text-gray-600">
-                  Menjadi solusi terdepan dalam perlindungan hutan Indonesia melalui inovasi teknologi terkini untuk menciptakan lingkungan yang lebih baik bagi generasi mendatang.
+                  To be the leading solution in Indonesian forest protection through cutting-edge technology innovation to create a better environment for future generations.
                 </p>
               </div>
             </div>
@@ -240,21 +240,21 @@ const Home = () => {
                   alt="Misi" 
                   className="w-10 h-10 object-contain mr-4"
                 />
-                <h3 className="text-2xl font-bold text-gray-800">Misi</h3>
+                <h3 className="text-2xl font-bold text-gray-800">Mission</h3>
               </div>
               <div className="flex-grow flex flex-col">
                 <ul className="space-y-3 mt-4">
                   <li className="flex items-start">
                     <span className="text-green-600 mr-2">✓</span>
-                    <span className="text-gray-600">Mengembangkan solusi pemantauan hutan berbasis AI</span>
+                    <span className="text-gray-600">Develop AI-based forest monitoring solutions</span>
                   </li>
                   <li className="flex items-start">
                     <span className="text-green-600 mr-2">✓</span>
-                    <span className="text-gray-600">Mendukung upaya pelestarian hutan Indonesia</span>
+                    <span className="text-gray-600">Support Indonesian forest conservation efforts</span>
                   </li>
                   <li className="flex items-start">
                     <span className="text-green-600 mr-2">✓</span>
-                    <span className="text-gray-600">Mencegah penebangan liar dan kerusakan hutan</span>
+                    <span className="text-gray-600">Prevent illegal logging and forest damage</span>
                   </li>
                 </ul>
               </div>
@@ -288,12 +288,12 @@ const Home = () => {
             transition={{ duration: 1 }}
             className="max-w-4xl mx-auto"
           >
-            <span className="text-green-400 font-semibold text-xs sm:text-base tracking-wider">DAMPAK LINGKUNGAN</span>
+            <span className="text-green-400 font-semibold text-xs sm:text-base tracking-wider">ENVIRONMENTAL IMPACT</span>
             <h2 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mt-2 sm:mt-4 mb-2 sm:mb-6 leading-tight">
-              Melindungi Hutan
+              Protecting Forests
             </h2>
             <p className="text-sm sm:text-lg md:text-xl text-gray-200 max-w-2xl mx-auto mb-6 sm:mb-8 px-2">
-              Bersama menjaga paru-paru dunia
+              Together preserving the lungs of our planet
             </p>
             
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mt-6 sm:mt-10 md:mt-16 px-2 sm:px-0">
@@ -456,66 +456,50 @@ const Home = () => {
 
 
       {/* Team Section */}
-      <section id="team" className="py-16 bg-black">
+      <section id="team" className="py-16 bg-white">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center text-white mb-4">Tim Pengembang</h2>
-          <p className="text-center text-gray-300 max-w-2xl mx-auto mb-12">Tim inovatif di balik solusi pemantauan hutan VoxSilva</p>
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-4">Development Team</h2>
+          <p className="text-center text-gray-600 max-w-2xl mx-auto mb-12">The innovative team behind VoxSilva's forest monitoring solution</p>
           
-          {/* Team Photo - Cinematic Design */}
-          <div className="relative mb-12 w-full overflow-hidden rounded-2xl">
-            <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-black/80 z-10"></div>
-            <div className="absolute inset-0 bg-black/40 z-20"></div>
-            <motion.div
-              initial={{ opacity: 0, scale: 1.1 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1.2, ease: "easeOut" }}
-              className="relative z-30 flex justify-center items-center py-16 px-4"
-            >
+          {/* Team Photo */}
+          <div className="flex justify-center items-center mb-12">
+            <div className="w-full max-w-5xl">
               <img 
-                src={teamPhoto}
+                src={teamPhoto} 
                 alt="Tim Pengembang VoxSilva"
-                className="w-full max-w-5xl h-auto rounded-xl shadow-2xl object-contain filter brightness-110 contrast-105"
+                className="w-full h-auto rounded-xl shadow-lg object-cover"
               />
-            </motion.div>
-            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black via-black/50 to-transparent z-20"></div>
-            <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-black via-black/50 to-transparent z-20"></div>
+            </div>
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
             {[
-              { name: 'Narendra Nararya Nurhan', photo: memberNarendra  },
-              { name: 'Adel Erasmo Farasya', photo: memberAdel},
-              { name: 'Aditya Sakti Nugraha', photo: memberAditya},
-              { name: 'Aero Naufaly Fadian', photo: memberAero},
+              { name: 'Narendra Nararya Nurhan', photo: memberNarendra },
+              { name: 'Adel Erasmo Farasya', photo: memberAdel },
+              { name: 'Aditya Sakti Nugraha', photo: memberAditya },
+              { name: 'Aero Naufaly Fadian', photo: memberAero },
               { name: 'Muhammad Davino Ananda', photo: memberDavino },
-              { name: 'W Javier Rafa Ramadhan', photo: memberJavier}
-            ].map((member, index) => (
-              <motion.div 
-                key={index}
-                className="bg-gray-900 border border-gray-800 p-4 rounded-xl shadow-md text-center hover:shadow-xl hover:bg-gray-800 transition-all duration-300 flex flex-col h-full"
-                whileHover={{ y: -5 }}
-              >
-                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full mx-auto mb-3 overflow-hidden border-2 border-green-600 flex items-center justify-center">
-                  <img 
-                    src={member.photo}
-                    alt={member.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                {member.name.startsWith('W Javier') ? (
-                  <>
-                    <h3 className="text-base sm:text-lg font-semibold text-white mb-1">W Javier</h3>
-                    <h4 className="text-sm sm:text-base text-gray-300">Rafa Ramadhan</h4>
-                  </>
-                ) : (
-                  <>
-                    <h3 className="text-base sm:text-lg font-semibold text-white mb-1">{member.name.split(' ')[0]}</h3>
-                    <h4 className="text-sm sm:text-base text-gray-300">{member.name.split(' ').slice(1).join(' ')}</h4>
-                  </>
-                )}
-              </motion.div>
-            ))}
+              { name: 'W Javier', lastName: 'Rafa Ramadhan', photo: memberJavier }
+            ].map((member, index) => {
+              const [firstName, ...lastName] = member.name.split(' ');
+              return (
+                <motion.div 
+                  key={index}
+                  className="bg-white border-2 border-green-500 p-4 rounded-xl shadow-md text-center hover:shadow-lg hover:bg-gray-50 transition-all duration-300 flex flex-col h-full"
+                  whileHover={{ y: -5 }}
+                >
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full mx-auto mb-3 overflow-hidden border-2 border-green-600 flex items-center justify-center bg-white p-1">
+                    <img 
+                      src={member.photo} 
+                      alt={member.name}
+                      className="w-full h-full object-cover rounded-full"
+                    />
+                  </div>
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1">{member.name === 'W Javier' ? 'W Javier' : firstName}</h3>
+                  <h4 className="text-sm sm:text-base text-gray-600">{member.name === 'W Javier' ? 'Rafa Ramadhan' : lastName.join(' ')}</h4>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -523,52 +507,52 @@ const Home = () => {
       <section id="contact" className="py-16 bg-white scroll-mt-24">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Siap Melindungi Hutan Indonesia?</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Ready to Protect Indonesia's Forests?</h2>
             <p className="text-xl text-gray-600 mb-8">
-              Mari berdiskusi bagaimana VoxSilva dapat membantu melindungi hutan dari penebangan liar
+              Let's discuss how VoxSilva can help protect forests from illegal logging
             </p>
             <button className="bg-green-700 text-white font-semibold px-8 py-3 rounded-lg hover:bg-green-800 transition duration-300 mb-12">
-              Hubungi Kami
+              Contact Us
             </button>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 text-left">
               <div>
-                <h3 className="text-xl font-bold mb-6 text-gray-800">Informasi Kontak</h3>
+                <h3 className="text-xl font-bold mb-6 text-gray-800">Contact Information</h3>
                 <div className="space-y-4">
                   <div>
                     <h4 className="font-semibold text-gray-700">Email</h4>
-                    <p className="text-gray-600">voxsilva@example.com</p>
+                    <p className="text-gray-600">voxsilva.official@gmail.com</p>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-700">Telepon</h4>
-                    <p className="text-gray-600">+62 812 3456 7890</p>
+                    <h4 className="font-semibold text-gray-700">Phone</h4>
+                    <p className="text-gray-600">+62 817-0701-981(elmo)</p>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-700">Media Sosial</h4>
+                    <h4 className="font-semibold text-gray-700">Social Media</h4>
                     <p className="text-gray-600">@voxsilva_id</p>
                   </div>
                 </div>
               </div>
 
               <div>
-                <h3 className="text-xl font-bold mb-6 text-gray-800">Kirim Pesan</h3>
+                <h3 className="text-xl font-bold mb-6 text-gray-800">Send Us a Message</h3>
                 <form className="space-y-4">
                   <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Nama</label>
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Name</label>
                     <input
                       type="text"
                       id="name"
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                      placeholder="Nama Anda"
+                      placeholder="Your name"
                     />
                   </div>
                   <div>
-                    <label htmlFor="institution" className="block text-sm font-medium text-gray-700 mb-1">Institusi/Perusahaan</label>
+                    <label htmlFor="institution" className="block text-sm font-medium text-gray-700 mb-1">Institution/Company</label>
                     <input
                       type="text"
                       id="institution"
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                      placeholder="Nama institusi/perusahaan"
+                      placeholder="Your institution/company name"
                     />
                   </div>
                   <div>
@@ -577,7 +561,7 @@ const Home = () => {
                       type="email"
                       id="email"
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                      placeholder="email@contoh.com"
+                      placeholder="your.email@example.com"
                     />
                   </div>
                   <div>
@@ -586,14 +570,14 @@ const Home = () => {
                       id="message"
                       rows="3"
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                      placeholder="Pesan Anda..."
+                      placeholder="Your message..."
                     ></textarea>
                   </div>
                   <button
                     type="submit"
                     className="w-full bg-green-700 text-white font-semibold py-2 px-6 rounded-lg hover:bg-green-800 transition duration-300"
                   >
-                    Kirim Pesan
+                    Send Message
                   </button>
                 </form>
               </div>

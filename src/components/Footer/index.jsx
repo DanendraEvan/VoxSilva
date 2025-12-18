@@ -31,7 +31,7 @@ const Footer = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
-              Melindungi hutan Indonesia melalui teknologi canggih untuk masa depan yang berkelanjutan dan lestari.
+              Protecting Indonesia's forests through advanced technology for a sustainable future.
             </motion.p>
             <motion.div 
               className="flex space-x-4"
@@ -68,13 +68,13 @@ const Footer = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <h3 className="text-lg font-semibold text-white mb-6">Tautan Cepat</h3>
+            <h3 className="text-lg font-semibold text-white mb-6">Quick Links</h3>
             <ul className="space-y-3">
-              <li><Link to="/" className="text-gray-300 hover:text-green-400 transition-colors">Beranda</Link></li>
-              <li><Link to="#features" className="text-gray-300 hover:text-green-400 transition-colors">Fitur</Link></li>
-              <li><Link to="#mission" className="text-gray-300 hover:text-green-400 transition-colors">Visi & Misi</Link></li>
-              <li><Link to="#impact" className="text-gray-300 hover:text-green-400 transition-colors">Dampak</Link></li>
-              <li><Link to="#contact" className="text-gray-300 hover:text-green-400 transition-colors">Kontak</Link></li>
+              <li><Link to="/" className="text-gray-300 hover:text-green-400 transition-colors">Home</Link></li>
+              <li><Link to="#features" className="text-gray-300 hover:text-green-400 transition-colors">Features</Link></li>
+              <li><Link to="#mission" className="text-gray-300 hover:text-green-400 transition-colors">Vision & Mission</Link></li>
+              <li><Link to="#impact" className="text-gray-300 hover:text-green-400 transition-colors">Impact</Link></li>
+              <li><Link to="#contact" className="text-gray-300 hover:text-green-400 transition-colors">Contact</Link></li>
             </ul>
           </motion.div>
           
@@ -85,20 +85,20 @@ const Footer = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.3 }}
           >
-            <h3 className="text-lg font-semibold text-white mb-6">Hubungi Kami</h3>
+            <h3 className="text-lg font-semibold text-white mb-6">Contact Us</h3>
             <ul className="space-y-3">
               <li className="flex items-start">
                 <svg className="h-5 w-5 text-green-400 mr-3 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
-                <span className="text-gray-300">Jl. 123 Pegangsaan Timur No 56</span>
+                <span className="text-gray-300">+62 817-0701-981 (Elmo)</span>
               </li>
               <li className="flex items-center">
                 <svg className="h-5 w-5 text-green-400 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                 </svg>
-                <a href="" className="text-gray-300 hover:text-green-400 transition-colors">+62 123-123-123</a>
+                <a href="mailto:voxsilva.official@gmail.com" className="text-gray-300 hover:text-green-400 transition-colors">voxsilva.official@gmail.com</a>
               </li>
               <li className="flex items-center">
                 <svg className="h-5 w-5 text-green-400 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">

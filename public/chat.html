@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#31694E">
-    <meta name="description" content="VoxSilva - Smart Forest Monitoring System">
+    <meta name="description" content="VoxSilva - AI Assistant for Forest Monitoring">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="VoxSilva">
@@ -660,12 +660,12 @@
                                 Assistant
                             </span>
                         </div>
-                        <div class="logo-subtitle">Konsultan Greenhouse & Tanaman</div>
+                        <div class="logo-subtitle">Greenhouse & Plant Consultant</div>
                     </div>
                 </div>
                 <button class="history-btn" onclick="showNotification('History feature')">
                     <i class="fas fa-history"></i>
-                    <span>Riwayat</span>
+                    <span>History</span>
                 </button>
             </div>
         </header>
@@ -680,17 +680,17 @@
                     </div>
                     <div class="message-bubble">
                         <div class="message-content">
-                            <strong>🌱 Selamat datang di AI VoxSilva</strong><br><br>
-                            Saya adalah asisten AI yang siap membantu Anda Memastikan Hutan Aman dari Penebangan Liar<br><br>
-                            <strong>✨ Saya dapat membantu:</strong><br>
-                            • Analisis data<br>
-                            • Rekomendasi langkah yang harus dilakukan<br>
-                            • Deteksi masalah dan dampaknya bagi lingkungan<br><br>
-                            <strong>💡 Cara menggunakan:</strong><br>
-                            1. Gunakan tombol cepat di bawah atau ketik pertanyaan<br>
-                            2. Dapatkan analisis dan rekomendasi real-time
+                            <strong>🌱 Welcome to VoxSilva AI</strong><br><br>
+                            I am your AI assistant, here to help you monitor and protect forests from illegal logging activities<br><br>
+                            <strong>✨ I can help with:</strong><br>
+                            • Data analysis<br>
+                            • Actionable recommendations<br>
+                            • Environmental impact assessment<br><br>
+                            <strong>💡 How to use:</strong><br>
+                            1. Use the quick action buttons below or type your question<br>
+                            2. Get real-time analysis and recommendations
                         </div>
-                        <span class="timestamp">Baru saja</span>
+                        <span class="timestamp">Just now</span>
                     </div>
                 </div>
 
@@ -701,9 +701,9 @@
                     </div>
                     <div class="message-bubble">
                         <div class="message-content">
-                            Bagaimana kondisi VoxSilva di Base 6?
+                            What's the status of VoxSilva at Base 6?
                         </div>
-                        <span class="timestamp">1 menit lalu</span>
+                        <span class="timestamp">1 minute ago</span>
                     </div>
                 </div>
 
@@ -714,16 +714,16 @@
                     </div>
                     <div class="message-bubble">
                         <div class="message-content">
-                            <strong>📊 Analisis Kondisi VoxSilva:</strong><br><br>
-                            Berdasarkan data terbaru:<br><br>
-                            <strong>📷 Kamera:</strong> Tidak terdeteksi aktivitas mencurigakan — lingkungan aman<br>
-                            <strong>🎤 Suara Lingkungan:</strong> Tingkat suara normal — tidak ada indikasi chainsaw atau aktivitas manusia<br>
-                            <strong>🧭 Sensor Gerak (MPU):</strong> Stabil — tidak ada getaran atau perpindahan alat<br>
-                            <strong>📡 LoRa:</strong> Koneksi stabil — data berhasil dikirim ke pusat pemantauan<br><br>
+                            <strong>📊 VoxSilva Status Analysis:</strong><br><br>
+                            Based on the latest data:<br><br>
+                            <strong>📷 Camera:</strong> No suspicious activity detected — environment is secure<br>
+                            <strong>🎤 Environmental Audio:</strong> Normal sound levels — no chainsaw or human activity detected<br>
+                            <strong>🧭 Motion Sensor (MPU):</strong> Stable — no vibrations or equipment movement<br>
+                            <strong>📡 LoRa:</strong> Stable connection — data successfully sent to monitoring center<br><br>
                             
-                            <strong>🟢 Status VoxSilva:</strong> Kondisi lingkungan terkendali. Tidak ditemukan ancaman pada area pemantauan.
+                            <strong>🟢 VoxSilva Status:</strong> Environment under control. No threats detected in the monitoring area.
                         </div>
-                        <span class="timestamp">Baru saja</span>
+                        <span class="timestamp">Just now</span>
                     </div>
                 </div>
 
@@ -731,12 +731,12 @@
                 <div class="activity-summary fade-in" style="animation-delay: 0.6s;">
                     <h3>
                         <i class="fas fa-chart-line"></i>
-                        Ringkasan Aktivitas Hari Ini
+                        Today's Activity Summary
                     </h3>
-                    <p><strong>Deteksi Kamera:</strong> 12 objek terpantau (human/non-human)</p>
-                    <p><strong>Analisis Suara:</strong> 3 aktivitas terdeteksi (0 chainsaw, 3 suara hewan)</p>
-                    <p><strong>Status Pergerakan MPU:</strong> Stabil – tidak ada getaran abnormal</p>
-                    <p><strong>Data Terkirim LoRa:</strong> 8 paket berhasil dikirim hari ini</p>
+                    <p><strong>Camera Detection:</strong> 12 objects detected (human/non-human)</p>
+                    <p><strong>Audio Analysis:</strong> 3 activities detected (0 chainsaw, 3 animal sounds)</p>
+                    <p><strong>MPU Motion Status:</strong> Stable – no abnormal vibrations</p>
+                    <p><strong>LoRa Data Sent:</strong> 8 packets successfully transmitted today</p>
                 </div>
                 
             </div>
@@ -749,18 +749,18 @@
                         <textarea 
                             id="chat-input" 
                             rows="1" 
-                            placeholder="Tanyakan tentang VoxSilva Anda..."
+                            placeholder="Ask about your VoxSilva..."
                             onkeydown="handleEnter(event)"
                             oninput="autoResize(this)"
                         ></textarea>
                         <div class="input-actions">
-                            <button class="input-btn" title="Lampirkan File">
+                            <button class="input-btn" title="Attach File">
                                 <i class="fas fa-paperclip"></i>
                             </button>
                             <button class="input-btn" title="Voice Input">
                                 <i class="fas fa-microphone"></i>
                             </button>
-                            <button class="input-btn send-btn" onclick="sendMessage()" title="Kirim">
+                            <button class="input-btn send-btn" onclick="sendMessage()" title="Send">
                                 <i class="fas fa-paper-plane"></i>
                             </button>
                         </div>
@@ -769,10 +769,10 @@
                     <!-- Quick Actions -->
                     <div class="quick-actions">
                         <button class="quick-action-btn" onclick="quickAction('analisis')">
-                            📊 Analisis Lengkap
+                            📊 Full Analysis
                         </button>
                         <button class="quick-action-btn" onclick="quickAction('kondisi')">
-                            🌡️ Cek Kondisi
+                            🌡️ Check Status
                         </button>
                     </div>
                 </div>
@@ -784,59 +784,109 @@
     <script>
         // Inisialisasi variabel untuk Gemini AI
         let geminiInitialized = false;
-        let geminiError = null;
+        let geminiModel = null;
+        let geminiChat = null;
 
-        // Fungsi untuk inisialisasi Gemini
+        // Function to initialize Gemini AI with proper error handling
         async function initializeGemini() {
-            if (geminiInitialized) return true;
+            if (geminiInitialized && geminiModel) return true;
             
             try {
-                // Gunakan dynamic import untuk modul ES6
+                // Use dynamic import for ES6 module
                 const { GoogleGenerativeAI } = await import("https://esm.run/@google/generative-ai");
                 
-                // API Key - GANTI DENGAN API KEY ANDA YANG VALID
+                // API Key - Make sure to use a valid API key
                 const API_KEY = "AIzaSyBI3hffTnY_cMAxgchm1Uay3TqpuljrTrM";
                 
-                if (!API_KEY || API_KEY.includes("YOUR_API_KEY") || API_KEY.length < 30) {
-                    throw new Error("API key tidak valid. Silakan ganti dengan API key Anda sendiri.");
+                if (!API_KEY || API_KEY.length < 30) {
+                    throw new Error("Invalid API key provided");
                 }
                 
                 const genAI = new GoogleGenerativeAI(API_KEY);
-                const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
                 
-                // Simpan fungsi di window
-                window.askGemini = async (prompt) => {
+                geminiModel = genAI.getGenerativeModel({ 
+                    model: "gemini-2.5-flash",
+                    generationConfig: {
+                        temperature: 0.7,
+                        topP: 0.95,
+                        topK: 40,
+                        maxOutputTokens: 2048,
+                    },
+                    safetySettings: [
+                        { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+                        { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+                        { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+                        { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+                    ],
+                });
+                
+                // Initialize chat with system prompt
+                geminiChat = geminiModel.startChat({
+                    history: [
+                        {
+                            role: "user",
+                            parts: [{ text: "You are VoxSilva AI, an advanced forest monitoring assistant. Your purpose is to help monitor forest conditions, detect illegal logging activities, and provide accurate information about the forest ecosystem. Always respond in a helpful, professional manner." }],
+                        },
+                        {
+                            role: "model",
+                            parts: [{ text: "I'm VoxSilva AI, ready to assist with forest monitoring. I can help analyze sensor data, detect chainsaw sounds, monitor wildlife activity, and provide insights about forest health and potential threats. How can I help you today?" }],
+                        },
+                    ],
+                });
+                
+                // Save function to window
+                window.askGemini = async (userPrompt) => {
                     try {
-                        const result = await model.generateContent(prompt);
+                        if (!geminiChat) {
+                            // Reinitialize if needed
+                            await initializeGemini();
+                        }
+                        
+                        const result = await geminiChat.sendMessage(userPrompt);
                         const response = await result.response;
-                        return response.text();
+                        const text = response.text();
+                        
+                        if (!text || text.trim().length === 0) {
+                            return "I couldn't generate a response. Could you please rephrase your question?";
+                        }
+                        
+                        return text;
                     } catch (error) {
-                        console.error("Error calling Gemini:", error);
-                        return "Maaf, terjadi kesalahan saat menghubungi AI. Pastikan API key valid dan koneksi internet stabil.";
+                        console.error("Gemini API Error:", error);
+                        
+                        // Try to reinitialize on error
+                        if (error.message.includes('API key') || error.message.includes('quota')) {
+                            throw new Error("API key issue. Please check your Gemini API key configuration.");
+                        }
+                        
+                        // Try direct model call as fallback
+                        try {
+                            if (!geminiModel) {
+                                await initializeGemini();
+                            }
+                            const result = await geminiModel.generateContent(userPrompt);
+                            const response = await result.response;
+                            return response.text() || "I couldn't generate a response. Please try again.";
+                        } catch (fallbackError) {
+                            console.error("Fallback also failed:", fallbackError);
+                            throw new Error("Failed to get response from AI service. Please check your internet connection and try again.");
+                        }
                     }
                 };
                 
                 geminiInitialized = true;
-                console.log("Gemini AI initialized successfully");
+                console.log("✅ Gemini AI initialized successfully");
                 return true;
-            } catch (error) {
-                console.error("Failed to initialize Gemini AI:", error);
-                geminiError = error.message;
                 
-                // Fallback: jika Gemini gagal, gunakan respons lokal
+            } catch (error) {
+                console.error("❌ Gemini Initialization Error:", error);
+                
+                // Fallback function
                 window.askGemini = async (prompt) => {
-                    const responses = [
-                        "Berdasarkan analisis VoxSilva, kondisi hutan di base 1 saat ini stabil. Tidak terdeteksi aktivitas penebangan liar.",
-                        "Sistem kamera menunjukkan tidak ada aktivitas mencurigakan dalam 24 jam terakhir.",
-                        "Sensor suara mendeteksi pola normal hutan. Tidak ada suara chainsaw yang teridentifikasi.",
-                        "Data sensor MPU menunjukkan kondisi stabil tanpa getaran abnormal.",
-                        "Koneksi LoRa berfungsi normal dengan packet loss di bawah 2%."
-                    ];
-                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-                    return `${randomResponse}\n\n(Catatan: Menggunakan mode fallback karena koneksi AI sedang tidak tersedia.)`;
+                    throw new Error(`AI service unavailable: ${error.message}. Please check your API key and internet connection.`);
                 };
                 
-                return true;
+                return false;
             }
         }
 
@@ -854,41 +904,76 @@
             }
         }
 
-        // Send message
+        // Send message with improved error handling
         async function sendMessage() {
             const input = document.getElementById('chat-input');
             const message = input.value.trim();
             
             if (!message) return;
             
-            // Tambahkan pesan user
-            addMessage(message, 'user');
+            // Disable input while processing
+            input.disabled = true;
+            const sendButton = document.querySelector('.send-btn');
+            if (sendButton) sendButton.disabled = true;
+            
+            // Clear input and add user message
             input.value = '';
             input.style.height = 'auto';
+            addMessage(message, 'user');
             
-            // Tampilkan typing indicator
+            // Show typing indicator
             showTypingIndicator();
             
             try {
-                // Inisialisasi Gemini jika belum
-                await initializeGemini();
+                // Initialize Gemini if not already initialized
+                const initialized = await initializeGemini();
                 
-                // Pastikan fungsi askGemini tersedia
-                if (typeof window.askGemini !== 'function') {
-                    throw new Error("AI service not initialized properly");
+                if (!initialized) {
+                    throw new Error("Failed to initialize AI service");
                 }
                 
-                // Dapatkan respons dari Gemini
+                // Check if askGemini function is available
+                if (typeof window.askGemini !== 'function') {
+                    throw new Error("AI service not properly initialized");
+                }
+                
+                // Get response from Gemini
                 const reply = await window.askGemini(message);
                 
-                // Hapus typing indicator dan tambahkan respons
+                // Display response
                 removeTypingIndicator();
-                addMessage(reply || "Maaf, saya tidak dapat memberikan respons saat ini.", 'ai');
+                
+                if (reply && reply.trim().length > 0) {
+                    addMessage(reply, 'ai');
+                } else {
+                    addMessage("I couldn't generate a response. Please try rephrasing your question.", 'ai');
+                }
                 
             } catch (error) {
-                console.error("Error in sendMessage:", error);
+                console.error("Send Message Error:", error);
                 removeTypingIndicator();
-                addMessage("⚠️ Terjadi kesalahan sistem. Silakan coba lagi nanti atau periksa koneksi internet Anda.", 'ai');
+                
+                // More specific error messages
+                let errorMessage = "⚠️ An error occurred while processing your request.";
+                
+                if (error.message) {
+                    if (error.message.includes('network') || error.message.includes('fetch')) {
+                        errorMessage = "⚠️ Network error. Please check your internet connection and try again.";
+                    } else if (error.message.includes('API key') || error.message.includes('quota')) {
+                        errorMessage = "⚠️ API configuration error. Please check the Gemini API key or quota.";
+                    } else if (error.message.includes('unavailable')) {
+                        errorMessage = "⚠️ AI service is currently unavailable. Please try again later.";
+                    } else {
+                        errorMessage = `⚠️ ${error.message}`;
+                    }
+                }
+                
+                addMessage(errorMessage, 'ai');
+            } finally {
+                // Re-enable input
+                input.disabled = false;
+                if (sendButton) sendButton.disabled = false;
+                input.focus();
             }
         }
 
@@ -901,8 +986,12 @@
             const avatarIcon = sender === 'user' ? 'fa-user' : 'fa-robot';
             const timestamp = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
             
-            // Escape HTML untuk keamanan
-            const escapedText = text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            // Escape HTML untuk keamanan, tapi preserve line breaks
+            let escapedText = text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/\n/g, '<br>');
             
             messageDiv.innerHTML = `
                 <div class="avatar">
@@ -915,7 +1004,10 @@
             `;
             
             chatMessages.appendChild(messageDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            // Smooth scroll to bottom
+            setTimeout(() => {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 100);
         }
 
         // Show typing indicator
@@ -952,15 +1044,19 @@
 
         // Quick actions
         function quickAction(type) {
-            const messages = {
-                'analisis': 'Berikan analisis lengkap kondisi VoxSilva di base 1',
-                'kondisi': 'Bagaimana kondisi VoxSilva base 1 saat ini?'
-            };
-            
-            const input = document.getElementById('chat-input');
-            input.value = messages[type] || '';
-            input.focus();
-            autoResize(input);
+            let message = '';
+            switch(type) {
+                case 'analisis':
+                    message = 'Please provide a complete analysis of the current forest conditions.';
+                    break;
+                case 'kondisi':
+                    message = 'What is the current status of the VoxSilva sensors?';
+                    break;
+                default:
+                    message = 'I need help with VoxSilva.';
+            }
+            document.getElementById('chat-input').value = message;
+            autoResize(document.getElementById('chat-input'));
         }
 
         // Show notification
@@ -976,9 +1072,15 @@
             // Initialize W3.js include functionality
             w3.includeHTML();
             
-            // Coba inisialisasi Gemini di background saat halaman load
-            initializeGemini().catch(err => {
-                console.log("Gemini initialization deferred:", err.message);
+            // Initialize Gemini in background when page loads
+            initializeGemini().then(success => {
+                if (success) {
+                    console.log("✅ Gemini ready for chat");
+                } else {
+                    console.warn("⚠️ Gemini initialization failed, will retry on first message");
+                }
+            }).catch(err => {
+                console.warn("⚠️ Gemini initialization deferred:", err.message);
             });
             
             const sendButton = document.querySelector('.send-btn');
