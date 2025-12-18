@@ -999,6 +999,79 @@
     <!-- W3.CSS Library for including HTML components -->
     <script src="https://www.w3schools.com/lib/w3.js"></script>
     
+    <!-- Monitoring JS (untuk data realtime) -->
+    <script src="js/monitoring.js" type="module"></script>
+    
+    <!-- AI Chat JS (membaca data dari monitoring.js) -->
+    <script src="js/ai-chat.js"></script>
+    
+    <!-- PWA Install Button -->
+    <button id="pwa-install-btn" class="pwa-install-button" style="display: none;">
+        <i class="fas fa-download"></i>
+        <span>Install App</span>
+    </button>
+
+    <style>
+        .pwa-install-button {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            background: linear-gradient(135deg, #31694E 0%, #2d5a44 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 14px 28px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(49, 105, 78, 0.4);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            animation: slideInUp 0.3s ease;
+        }
+        
+        .pwa-install-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(49, 105, 78, 0.5);
+            background: linear-gradient(135deg, #2d5a44 0%, #31694E 100%);
+        }
+        
+        .pwa-install-button:active {
+            transform: translateY(0);
+        }
+        
+        .pwa-install-button i {
+            font-size: 16px;
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .pwa-install-button {
+                bottom: 100px;
+                right: 15px;
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+        }
+    </style>
+    
+    <!-- PWA Install Script -->
+    <script src="/js/pwa-install.js"></script>
+    
     <!-- PWA Service Worker Registration -->
     <script src="/js/service-worker-register.js"></script>
 </body>

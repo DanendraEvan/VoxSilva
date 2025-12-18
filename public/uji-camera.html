@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uji Camera - VoxSilva</title>
+    <meta name="theme-color" content="#2c4d32">
+    <meta name="description" content="Uji Deteksi Camera - VoxSilva">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="VoxSilva">
+    <link rel="apple-touch-icon" href="/icon-192x192.png">
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-green: #2c4d32;
+            --primary-green-dark: #1a3320;
+            --primary-green-light: #3d6b45;
+            --accent-green: #4caf50;
+            --accent-light: #81c784;
+            --bg-primary: #f8faf9;
+            --bg-card: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --border-color: #e0e0e0;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
+            --shadow-lg: 0 8px 32px rgba(0,0,0,0.16);
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --spacing-2xl: 3rem;
+            --border-radius-sm: 8px;
+            --border-radius-md: 12px;
+            --border-radius-lg: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-green-dark) 100%);
+            color: white;
+            padding: var(--spacing-md) var(--spacing-lg);
+            box-shadow: var(--shadow-md);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            max-width: 100%;
+        }
+
+        .back-button {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--border-radius-sm);
+            border: none;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            backdrop-filter: blur(10px);
+            font-size: 1.25rem;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateX(-2px);
+        }
+
+        .header-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .header-title i {
+            font-size: 1.5rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding: var(--spacing-lg);
+        }
+
+        .iframe-container {
+            flex: 1;
+            background: white;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            position: relative;
+        }
+
+        .iframe-wrapper {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .iframe-error {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            padding: var(--spacing-xl);
+            background: white;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            max-width: 500px;
+            z-index: 10;
+        }
+
+        .iframe-error.show {
+            display: block;
+        }
+
+        .error-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto var(--spacing-md);
+            border-radius: 50%;
+            background: #fee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #c33;
+            font-size: 2rem;
+        }
+
+        .error-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .error-description {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .error-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: var(--spacing-sm) var(--spacing-lg);
+            border-radius: var(--border-radius-md);
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        .error-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: var(--spacing-md);
+            }
+
+            .header-title {
+                font-size: 1.125rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="/dashboard.html" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div class="header-title">
+                <i class="fas fa-camera"></i>
+                <span>Uji Deteksi Camera</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="iframe-container">
+            <div class="iframe-wrapper">
+                <iframe
+                    id="edgeimpulse-iframe"
+                    src="https://smartphone.edgeimpulse.com/classifier.html?apiKey=ei_638697708671b17caf26441d7de96b27abc60e15478d360595c5a923d46dfaf3"
+                    allow="camera; microphone; accelerometer; fullscreen"
+                    frameborder="0"
+                    sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
+                ></iframe>
+            </div>
+            <div class="iframe-error" id="iframe-error">
+                <div class="error-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h3 class="error-title">Iframe Tidak Dapat Dimuat</h3>
+                <p class="error-description">
+                    Edge Impulse memblokir iframe dari domain lain karena kebijakan keamanan. 
+                    Silakan buka halaman di tab baru.
+                </p>
+                <a 
+                    href="https://smartphone.edgeimpulse.com/classifier.html?apiKey=ei_638697708671b17caf26441d7de96b27abc60e15478d360595c5a923d46dfaf3"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="error-button"
+                >
+                    <i class="fas fa-external-link-alt"></i>
+                    Buka di Tab Baru
+                </a>
+            </div>
+        </div>
+    </main>
+    <script>
+        // Check if iframe loaded successfully
+        const iframe = document.getElementById('edgeimpulse-iframe');
+        const errorDiv = document.getElementById('iframe-error');
+        
+        iframe.addEventListener('load', function() {
+            // Try to detect if iframe was blocked
+            try {
+                // If we can access iframe content, it loaded successfully
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                console.log('Iframe loaded successfully');
+            } catch (e) {
+                // Cross-origin error is expected, but iframe might still work
+                console.log('Cross-origin iframe (expected)');
+            }
+        });
+        
+        iframe.addEventListener('error', function() {
+            errorDiv.classList.add('show');
+        });
+        
+        // Check after a delay if iframe is blocked
+        setTimeout(function() {
+            try {
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                // If we get here, iframe loaded
+            } catch (e) {
+                // Check if error message appears in console (CSP violation)
+                // This is a fallback - CSP errors might not trigger error event
+                console.log('Iframe may be blocked by CSP');
+            }
+        }, 3000);
+    </script>
+</body>
+</html>
+
